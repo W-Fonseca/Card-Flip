@@ -713,6 +713,18 @@ margin-right: 20%;
     <button onclick="saveButtonStyle()">Salvar Estilo dos Botões</button>
     </div>
 
+    <div id="crop-modal" style="display: none; position: fixed; top: 0px; left: 0px; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 20px; border-radius: 10px; position: relative;">
+            <h3>Editar imagem</h3>
+            <div style="width: 300px; height: 400px; overflow: hidden; position: relative; border: 1px solid #000;">
+                <img id="editable-img" src="https://upload.wikimedia.org/wikipedia/en/e/e2/NFS_High_Stakes_box.jpg" style="position: absolute; cursor: grab; width: auto; height: 100%; transform-origin: center center; transform: scale(1); left: 0px; top: 0px;">
+            </div>
+            <input id="zoom-range" type="range" min="0.3" max="2" step="0.01" value="1" style="width: 100%; margin-top: 10px;">
+            <button onclick="applyCrop()">Aplicar</button>
+            <button onclick="closeModal()">Cancelar</button>
+        </div>
+    </div>
+
     <!-- Formulário de Login -->
 <div id="login-container" class="content-container active">
     <div class="white-box">
@@ -735,10 +747,11 @@ margin-right: 20%;
     </div>
 </div>
 
-    <div id="context-menu" class="context-menu hidden" style="submenu-options">
+    <div id="context-menu" class="context-menu">
         <button onclick="editCard('name')">Editar Nome</button>
         <button onclick="editCard('comment')">Editar Comentário</button>
         <button onclick="editCard('image')">Editar Imagem</button>
+        <button onclick="editCardCrop()">Editar Crop</button>
         <button onclick="deleteCard()">Excluir</button>
         <div class="submenu">
             <button>Mover para Outra Sessão</button>
@@ -752,7 +765,6 @@ margin-right: 20%;
             </div>
         </div>
     </div>
-
 
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
@@ -789,46 +801,6 @@ margin-right: 20%;
             });
         }
     
-        // Função para criar um novo cartão
-        function createCard(data, key) {
-            const cardContainer = document.createElement("div");
-            cardContainer.classList.add("card-container");
-            cardContainer.setAttribute("onclick", "flipCard(event)");
-            cardContainer.setAttribute("oncontextmenu", "showContextMenu(event)");
-            cardContainer.setAttribute("data-key", key); // Armazena a chave do Firebase
-    
-            const card = document.createElement("div");
-            card.classList.add("card");
-    
-            // Frente da carta
-            const front = document.createElement("div");
-            front.classList.add("front");
-            const img = document.createElement("img");
-            img.src = data.image || "https://via.placeholder.com/300x400";
-            img.alt = data.name || "Frente da Carta";
-            img.classList.add("image");
-            front.appendChild(img);
-    
-            // Verso da carta
-            const back = document.createElement("div");
-            back.classList.add("back");
-    
-            const cardName = document.createElement("div");
-            cardName.classList.add("name");
-            cardName.textContent = data.name || "Nome Desconhecido";
-    
-            const cardText = document.createElement("div");
-            cardText.classList.add("comment");
-            cardText.textContent = data.comment || "Descrição não disponível";
-    
-            back.appendChild(cardName);
-            back.appendChild(cardText);
-            card.appendChild(front);
-            card.appendChild(back);
-            cardContainer.appendChild(card);
-    
-            return cardContainer;
-        }
     
         // Função para adicionar novo cartão ao Firebase e à interface
         function addCard(session) {
@@ -877,6 +849,11 @@ margin-right: 20%;
     
  // Variável global para armazenar o cartão selecionado
 let selectedCard = null;
+let selectedImg = null;
+let posX = 0, posY = 0;
+let startX, startY;
+let isDragging = false;
+
 
 // Mostrar menu de contexto (botão direito)
 function showContextMenu(event) {
@@ -986,6 +963,16 @@ function createCard(data, key) {
     img.src = data.image || "https://via.placeholder.com/300x400";
     img.alt = data.name || "Frente da Carta";
     img.classList.add("image");
+
+    if (data.crop) {
+    img.style.position = "absolute";
+    img.style.height = "100%";
+    img.style.width = "auto";
+    img.style.left = data.crop.left || "0px";
+    img.style.top = data.crop.top || "0px";
+    img.style.transform = `scale(${data.crop.zoom || 1})`;
+}
+    front.style.overflow = "hidden";
     front.appendChild(img);
 
     // Verso da carta
@@ -1006,7 +993,21 @@ function createCard(data, key) {
     card.appendChild(back);
     cardContainer.appendChild(card);
 
+    cardContainer.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+    selectedCard = this;
+    selectedImg = this.querySelector('img');
+
+    const menu = document.getElementById('context-menu');
+    menu.style.top = `${event.clientY}px`;
+    menu.style.left = `${event.clientX}px`;
+    menu.style.display = 'block';
+});
+
+
     return cardContainer;
+
+    
 }
 
 function moveCard(newSession) {
@@ -1644,6 +1645,95 @@ function removeIcon() {
     // Remove a imagem de fundo da visualização
     document.body.style.backgroundImage = "none";
 }
+
+function applyCrop() {
+    const editable = document.getElementById('editable-img');
+    const zoom = parseFloat(document.getElementById('zoom-range').value);
+    const imgLeft = editable.style.left;
+    const imgTop = editable.style.top;
+
+    // Aplicar na imagem real
+    selectedImg.style.left = imgLeft;
+    selectedImg.style.top = imgTop;
+    selectedImg.style.transform = `scale(${zoom})`;
+    selectedImg.style.position = "absolute";
+    selectedImg.style.height = "100%";
+    selectedImg.style.width = "auto";
+
+    // SALVAR NO FIREBASE (ajuste o caminho conforme seu projeto!)
+    const cardKey = selectedCard.getAttribute("data-key"); // ou outro identificador
+    if (!currentUser || !cardKey) return;
+
+    const cardRowId = selectedCard.closest(".card-row").id;
+const session = cardRowId.split("-")[2]; // filmes, jogos, etc.
+const ref = firebase.database().ref(`usuarios/${currentUser}/${session}/${cardKey}`);
+
+    ref.update({
+        crop: {
+            left: imgLeft,
+            top: imgTop,
+            zoom: zoom
+        }
+    }).then(() => {
+        console.log("Crop salvo no Firebase!");
+    });
+
+    closeModal();
+}
+
+function closeModal() {
+    document.getElementById('crop-modal').style.display = 'none';
+}
+
+document.addEventListener('click', () => {
+    document.getElementById('context-menu').style.display = 'none';
+});
+
+function editCardCrop() {
+    const modal = document.getElementById('crop-modal');
+    const editable = document.getElementById('editable-img');
+    const zoomSlider = document.getElementById('zoom-range');
+
+    if (!selectedImg) return;
+
+    // Aplica imagem no editor
+    editable.src = selectedImg.src;
+    editable.style.left = selectedImg.style.left || "0px";
+    editable.style.top = selectedImg.style.top || "0px";
+    zoomSlider.value = selectedImg.style.transform?.match(/scale\(([\d.]+)\)/)?.[1] || "1";
+    editable.style.transform = `scale(${zoomSlider.value})`;
+
+    // Reset posição
+    posX = parseFloat(editable.style.left) || 0;
+    posY = parseFloat(editable.style.top) || 0;
+
+    modal.style.display = 'flex';
+
+    // Drag & Drop
+    editable.onmousedown = (e) => {
+        isDragging = true;
+        startX = e.clientX - posX;
+        startY = e.clientY - posY;
+        editable.style.cursor = 'grabbing';
+    };
+    document.onmouseup = () => {
+        isDragging = false;
+        editable.style.cursor = 'grab';
+    };
+    document.onmousemove = (e) => {
+        if (!isDragging) return;
+        posX = e.clientX - startX;
+        posY = e.clientY - startY;
+        editable.style.left = `${posX}px`;
+        editable.style.top = `${posY}px`;
+    };
+    zoomSlider.oninput = () => {
+        editable.style.transform = `scale(${zoomSlider.value})`;
+    };
+}
+
+
+
 
     </script>
     
