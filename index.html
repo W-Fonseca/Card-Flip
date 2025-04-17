@@ -911,7 +911,16 @@ function editCard(field) {
         const ref = database.ref(`usuarios/${currentUser}/${session}/${cardKey}`);
 
         // Prompt para o novo valor
-        const newValue = prompt(`Digite o novo valor para ${field}:`);
+        let currentValue = "";
+        if (field === "image") {
+            const imgElement = selectedCard.querySelector(`.${field}`);
+            currentValue = imgElement?.src || "";
+        } else {
+            const textElement = selectedCard.querySelector(`.${field}`);
+            currentValue = textElement?.textContent || "";
+        }
+        const newValue = prompt(`Digite o novo valor para ${field}:`, currentValue);
+
         if (newValue) {
             // Atualizar no Firebase
             const updateData = { [field]: newValue };
