@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta Flip</title>
+    <style>
+        body {
+    background-color: #f0f0f0;
+    margin: 0;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    overflow: auto;
+    font-family: Arial, sans-serif;
+    background-image: url('backgroundUrl'); /* Substitua pelas URLs reais */
+    background-size: cover;           /* cobre todo o container cortando excesso */
+    background-position: center;      /* centraliza a imagem */
+    background-repeat: no-repeat;     /* não repete */
+    background-attachment: fixed;     /* fundo fixo */
+    transition: background 0.3s ease; /* Suaviza a transição ao alterar a imagem */
+    z-index: 1; /* A cor de fundo e a imagem de fundo ficam atrás */
+    width: 100%; /* Ocupa toda a largura da tela */
+    padding: 0; /* Remove preenchimentos */
+
+    font-size: 16px; /* Tamanho base para fontes */
+}
+
+        /* Menu de navegação */
+        nav {
+    background-color: #002238;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; /* Permite que os itens quebrem linha */
+    justify-content: space-between; /* Espaço entre os itens */
+    align-items: center; /* Alinhar verticalmente */
+    padding: 10px;
+    box-sizing: border-box; /* Inclui padding no cálculo da largura */
+}
+
+nav a {
+    color: white;
+    margin: 5px; /* Espaçamento entre os links */
+    text-decoration: none;
+    font-size: 1rem; /* Tamanho relativo ao dispositivo */
+    flex: 1; /* Permite que os links ocupem espaço igual */
+    text-align: center; /* Centraliza o texto */
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.dropbtn {
+    width: 100%; /* O botão ocupa toda a largura disponível */
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+
+        /* Container para as sessões */
+        .content-container {
+            display: none;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            padding: 20px;
+            box-sizing: border-box; /* Inclui padding no cálculo da largura */
+        }
+
+        .active {
+            display: block;
+        }
+
+        .card-row {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os cartões quebrem linha */
+    gap: 10px; /* Espaçamento entre os cartões */
+    justify-content: left; /* Centraliza os cartões */
+    width: 100%; /* Ocupa toda a largura disponível */
+    box-sizing: border-box; /* Inclui padding no cálculo da largura */
+}
+
+.card {
+    flex: 1 1 calc(33.333% - 20px); /* Cada cartão ocupa 1/3 da largura menos o espaçamento */
+    max-width: 300px; /* Limita a largura máxima */
+    height: auto; /* Ajusta a altura automaticamente */
+    margin: 10px; /* Espaçamento ao redor dos cartões */
+    box-sizing: border-box; /* Inclui padding no cálculo da largura */
+}
+
+.card .front img {
+    width: 100%; /* A imagem ocupa toda a largura do cartão */
+    height: 100%; /* A imagem ocupa toda a altura do cartão */
+    object-fit: cover; /* Faz a imagem preencher os 4 cantos da carta */
+    object-position: center; /* Centraliza a imagem dentro do espaço */
+    border-radius: 10px; /* Mantém as bordas arredondadas, se necessário */
+}
+
+        .card-container {
+            perspective: 1000px;
+            margin: 10px;
+        }
+
+        .card {
+            width: 300px;
+            height: 400px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .card .front, .card .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border: 2px solid #000;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .card .back {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            transform: rotateY(180deg);
+        }
+
+        .card .back .card-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .card .back .card-text {
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .flipped .card {
+            transform: rotateY(180deg);
+        }
+
+        /* Botão para adicionar carta */
+        #add-card-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #add-card-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* Menu de contexto */
+        .context-menu {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .context-menu button {
+            padding: 10px;
+            background-color: #002238;
+            border: none;
+            color: white;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .context-menu button:hover {
+            background-color: #2980b9;
+        }
+
+        .submenu {
+            position: relative;
+        }
+
+        .submenu-options {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .submenu:hover .submenu-options {
+            display: flex;
+        }
+
+        .submenu-options button {
+            padding: 10px;
+            background-color: #002238;
+            border: none;
+            color: white;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .submenu-options button:hover {
+            background-color: #2980b9;
+        }
+
+        #login-container, #register-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        #login-container.active, #register-container.active {
+            display: flex;
+        }
+
+
+        #login-container input, #register-container input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 80%;
+            max-width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #login-container button, #register-container button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #login-container button:hover, #register-container button:hover {
+            background-color: #2980b9;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #login-container.hidden, #register-container.hidden {
+            display: none;
+        }
+
+        #move-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+        }
+
+        #move-modal.hidden {
+            display: none;
+        }
+
+        /* Estilo para o container de login */
+        #login-container, #register-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            background-size: cover;
+            overflow: hidden; /* Garante que nada ultrapasse os limites */
+        }
+
+        #login-container{
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+        }
+        #register-container {
+    background: linear-gradient(135deg, #ae04f7, #260533); /* Gradiente roxo */
+}
+        /* Caixa de login */
+        .white-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Título */
+        .white-box h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        /* Inputs */
+        .white-box input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Botão de login */
+        .white-box button {
+            width: 100%;
+            padding: 12px;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #login-container .white-box button {
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+        }
+        #login-container .white-box button:hover {
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+        }
+        #register-container .white-box button {
+            background: linear-gradient(135deg, #ae04f7, #260533);
+        }
+        #register-container .white-box button:hover {
+            background: linear-gradient(135deg, #260533, #ae04f7);
+        }
+
+        .white-box button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .white-box button:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(50, 152, 219, 0.8);
+        }
+
+        /* Link para registro */
+        .white-box p {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .white-box p a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .white-box p a:hover {
+            text-decoration: underline;
+        }
+
+        /* Inputs e botão com o mesmo tamanho */
+        .white-box input,
+        .white-box button {
+            width: 100%; /* Define a largura como 100% */
+            max-width: 300px; /* Define um limite máximo de largura */
+            box-sizing: border-box; /* Inclui padding no cálculo da largura */
+        }
+
+        /* Submenu estilizado */
+        .submenu-options {
+            display: none; /* Oculto por padrão */
+            position: absolute;
+            top: 30px; /* Ajuste para aparecer abaixo do ícone */
+            right: 0;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            z-index: 1000;
+            min-width: 150px;
+        }
+
+        .submenu-options button {
+            width: 100%;
+            padding: 10px 15px;
+            background-color: transparent;
+            border: none;
+            text-align: left;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .submenu-options button:hover {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .submenu-options button:not(:last-child) {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .dropbtn {
+        background-color: #002238;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .dropbtn:hover, .dropbtn:focus {
+        background-color: #012944;
+    }
+
+    .dropdown {
+  position: relative;
+  width: auto;
+  height: auto;
+  position: relative;
+margin-right: 20%;
+}
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        overflow: auto;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+
+    .dropdown-content button {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        background: none;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .dropdown-content button:hover {
+        background-color: #ddd;
+    }
+
+    .show {
+        display: block;
+    }
+
+    .dropdown-content button {
+    width: 100%; /* Ocupar toda a largura do dropdown */
+    padding: 12px 16px; /* Espaçamento interno */
+    background: none; /* Remover fundo padrão */
+    border: none; /* Remover borda padrão */
+    text-align: left; /* Alinhar texto à esquerda */
+    font-size: 14px; /* Ajustar tamanho da fonte */
+    color: black; /* Cor do texto */
+    cursor: pointer; /* Mostrar cursor de ponteiro */
+    display: block; /* Garantir que seja um bloco */
+    box-sizing: border-box; /* Incluir padding no cálculo da largura */
+}
+
+.dropdown-content button:hover {
+    background-color: #ddd; /* Cor de fundo ao passar o mouse */
+}
+
+/* Estilo para o container */
+#editlayout {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+}
+
+/* Estilo para os títulos */
+#editlayout h2 {
+    font-size: 24px;
+    color: #3498db;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#editlayout h3 {
+    font-size: 20px;
+    color: #2ecc71;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+/* Estilo para os labels */
+#editlayout label {
+    display: block;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Estilo para os inputs de texto */
+#editlayout input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para os inputs de cor */
+#editlayout input[type="color"] {
+    width: 50px;
+    height: 30px;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+/* Estilo para os inputs de range */
+#editlayout input[type="range"] {
+    width: 100%;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+/* Estilo para os botões */
+#editlayout button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px 5px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#editlayout button:hover {
+    background: linear-gradient(135deg, #2ecc71, #3498db);
+    transform: scale(1.05);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+#editlayout button:focus {
+    outline: none;
+    box-shadow: 0 0 8px rgba(50, 152, 219, 0.8);
+}
+
+/* Estilo para os spans */
+#editlayout span {
+    font-size: 14px;
+    color: #555;
+    margin-left: 10px;
+    font-weight: bold;
+}
+.user-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+}
+
+
+    </style>
+</head>
+<body onload="loadCards()">
+    <nav id="navbar" class="hidden">
+        <a href="#" onclick="showSession('filmes')">Filmes</a>
+        <a href="#" onclick="showSession('jogos')">Jogos</a>
+        <a href="#" onclick="showSession('livros')">Livros</a>
+        <a href="#" onclick="showSession('animes')">Animes</a>
+        <a href="#" onclick="showSession('kids')">Kids</a>
+        <a href="#" onclick="showSession('series')">Séries</a>
+        <div class="dropdown">
+            <div class="dropbtn" onclick="toggleDropdown()" style="font-family: 'Segoe UI Symbol';">
+                <img id="user-icon" src="" alt="Usuário" class="user-icon" />
+                <div id="dropdownMenu" class="dropdown-content" style="margin-top: 150%;">
+                    <button onclick="showSession('editlayout')">Editar Layout</button>
+                    <button onclick="confirmDeleteAccount()">Excluir Conta</button>
+                    <button onclick="logout()">Logout</button>
+                </div>
+                <span id="user-display" onclick="toggleDropdown(event)"></span>            
+            </div>
+        </div>
+    </nav>
+
+    <div id="filmes" class="content-container hidden">
+        <div class="scroll-container" id="scroll-container-filmes">
+            <div class="card-row" id="card-row-filmes">
+                <!-- Cartas de filmes vão aqui -->
+            </div>
+        </div>
+        <button id="add-card-filmes" class="hidden" onclick="addCard('filmes')">Adicionar Carta de Filme</button>
+    </div>
+
+    <div id="jogos" class="content-container hidden">
+        <div class="scroll-container" id="scroll-container-jogos">
+            <div class="card-row" id="card-row-jogos">
+                <!-- Cartas de jogos vão aqui -->
+            </div>
+        </div>
+        <button id="add-card-jogos" class="hidden" onclick="addCard('jogos')">Adicionar Carta de Jogo</button>
+    </div>
+
+    <div id="livros" class="content-container hidden">
+        <div class="scroll-container" id="scroll-container-livros">
+            <div class="card-row" id="card-row-livros">
+                <!-- Cartas de livros vão aqui -->
+            </div>
+        </div>
+        <button id="add-card-livros" class="hidden" onclick="addCard('livros')">Adicionar Carta de Livro</button>
+    </div>
+
+    <div id="animes" class="content-container hidden">
+        <div class="scroll-container" id="scroll-container-animes">
+            <div class="card-row" id="card-row-animes">
+                <!-- Cartas de animes/cartoons vão aqui -->
+            </div>
+        </div>
+        <button id="add-card-animes" class="hidden" onclick="addCard('animes')">Adicionar Carta de Anime/Cartoon</button>
+    </div>
+
+    <div id="kids" class="content-container hidden">
+        <div class="scroll-container" id="scroll-container-kids">
+            <div class="card-row" id="card-row-kids">
+                <!-- Cartas de kids vão aqui -->
+            </div>
+        </div>
+        <button id="add-card-kids" class="hidden" onclick="addCard('kids')">Adicionar Carta de kids</button>
+    </div>
+
+    <div id="series" class="content-container hidden">
+        <div class="scroll-container" id="scroll-container-series">
+            <div class="card-row" id="card-row-series">
+                <!-- Cartas de séries vão aqui -->
+            </div>
+        </div>
+        <button id="add-card-series" class="hidden" onclick="addCard('series')">Adicionar Carta de Série</button>
+    </div>
+
+    <div id="editlayout" class="content-container hidden">
+        <h2>Editar Layout</h2>
+        <label for="background-url">URL da Imagem de Fundo:</label>
+        <input type="text" id="background-url" placeholder="Digite a URL da imagem">
+        <button onclick="previewBackground()">Pré-visualizar</button>
+        <button onclick="removeImage()">Remover Imagem</button>
+        <label for="icon-url">URL do Icone:</label>
+        <input type="text" id="icon-Url" placeholder="Digite a URL da imagem">
+        <button onclick="removeIcon()">Remover Icone</button>
+    
+        <h3>Alterar Cor de Fundo</h3>
+        <label for="background-color1">Cor 1:</label>
+        <input type="color" id="background-color1" value="#ffffff">
+        <label for="background-color2">Cor 2 (opcional):</label>
+        <input type="color" id="background-color2" value="#ffffff">
+        <button onclick="previewBackgroundColor()">Pré-visualizar Cor</button>
+        <button onclick="saveBackground()">Salvar BackGround</button>
+
+        <h3>Personalizar Botões</h3>
+    <label for="button-bg-color">Cor de Fundo:</label>
+    <input type="color" id="button-bg-color" value="#3498db">
+    <label for="button-hover-bg-color">Cor de Fundo (Hover):</label>
+    <input type="color" id="button-hover-bg-color" value="#2ecc71">
+    <label for="button-text-color">Cor do Texto:</label>
+    <input type="color" id="button-text-color" value="#ffffff">
+    <label for="button-border-radius">Borda Arredondada (px):</label>
+    <input type="range" id="button-border-radius" min="0" max="50" value="25" oninput="updateButtonPreview()">
+    <span id="button-border-radius-value">25px</span>
+    <label for="button-width">Largura do Botão (px):</label>
+    <input type="range" id="button-width" min="50" max="300" value="150" oninput="updateButtonPreview()">
+    <span id="button-width-value">150px</span>
+    <label for="button-height">Altura do Botão (px):</label>
+    <input type="range" id="button-height" min="20" max="100" value="40" oninput="updateButtonPreview()">
+    <span id="button-height-value">40px</span>
+    <button onclick="saveButtonStyle()">Salvar Estilo dos Botões</button>
+    </div>
+
+    <!-- Formulário de Login -->
+<div id="login-container" class="content-container active">
+    <div class="white-box">
+        <h2>Login</h2>
+        <input type="text" id="login-username" placeholder="Usuário">
+        <input type="password" id="login-password" placeholder="Senha">
+        <button onclick="login()">Entrar</button>
+        <p>Não tem uma conta? <a href="#" onclick="showRegister()">Registre-se</a></p>
+    </div>
+</div>
+
+<!-- Formulário de Registro -->
+<div id="register-container" class="content-container hidden">
+    <div class="white-box">
+        <h2>Registrar</h2>
+        <input type="text" id="register-username" placeholder="Usuário">
+        <input type="password" id="register-password" placeholder="Senha">
+        <button onclick="register()">Registrar</button>
+        <p>Já tem uma conta? <a href="#" onclick="showLogin()">Faça login</a></p>
+    </div>
+</div>
+
+    <div id="context-menu" class="context-menu hidden" style="submenu-options">
+        <button onclick="editCard('name')">Editar Nome</button>
+        <button onclick="editCard('comment')">Editar Comentário</button>
+        <button onclick="editCard('image')">Editar Imagem</button>
+        <button onclick="deleteCard()">Excluir</button>
+        <div class="submenu">
+            <button>Mover para Outra Sessão</button>
+            <div class="submenu-options hidden">
+                <button onclick="moveCardTo('filmes')">Filmes</button>
+                <button onclick="moveCardTo('jogos')">Jogos</button>
+                <button onclick="moveCardTo('livros')">Livros</button>
+                <button onclick="moveCardTo('animes')">Animes/Cartoons</button>
+                <button onclick="moveCardTo('kids')">Kids</button>
+                <button onclick="moveCardTo('series')">Séries</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCvMTjow03ppCTtOZAqbGdEQE63kgh66J8",
+            authDomain: "animes-list01.firebaseapp.com",
+            databaseURL: "https://animes-list01-default-rtdb.firebaseio.com",
+            projectId: "animes-list01",
+            storageBucket: "animes-list01.appspot.com",
+            messagingSenderId: "1072792842054",
+            appId: "1:1072792842054:web:12b49d8e7160f82de97f47",
+            measurementId: "G-6VX3Z36RQ9"
+        };
+    
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    
+        // Função para alternar entre sessões
+        function showSession(session) {
+            const sections = ["filmes", "jogos", "livros", "animes", "kids", "series", "editlayout"];
+            sections.forEach((s) => {
+                const sectionContainer = document.getElementById(s);
+                if (sectionContainer) {
+                    if (s === session) {
+                        sectionContainer.classList.add("active");
+                        sectionContainer.classList.remove("hidden");
+                    } else {
+                        sectionContainer.classList.remove("active");
+                        sectionContainer.classList.add("hidden");
+                    }
+                }
+            });
+        }
+    
+        // Função para criar um novo cartão
+        function createCard(data, key) {
+            const cardContainer = document.createElement("div");
+            cardContainer.classList.add("card-container");
+            cardContainer.setAttribute("onclick", "flipCard(event)");
+            cardContainer.setAttribute("oncontextmenu", "showContextMenu(event)");
+            cardContainer.setAttribute("data-key", key); // Armazena a chave do Firebase
+    
+            const card = document.createElement("div");
+            card.classList.add("card");
+    
+            // Frente da carta
+            const front = document.createElement("div");
+            front.classList.add("front");
+            const img = document.createElement("img");
+            img.src = data.image || "https://via.placeholder.com/300x400";
+            img.alt = data.name || "Frente da Carta";
+            img.classList.add("image");
+            front.appendChild(img);
+    
+            // Verso da carta
+            const back = document.createElement("div");
+            back.classList.add("back");
+    
+            const cardName = document.createElement("div");
+            cardName.classList.add("name");
+            cardName.textContent = data.name || "Nome Desconhecido";
+    
+            const cardText = document.createElement("div");
+            cardText.classList.add("comment");
+            cardText.textContent = data.comment || "Descrição não disponível";
+    
+            back.appendChild(cardName);
+            back.appendChild(cardText);
+            card.appendChild(front);
+            card.appendChild(back);
+            cardContainer.appendChild(card);
+    
+            return cardContainer;
+        }
+    
+        // Função para adicionar novo cartão ao Firebase e à interface
+        function addCard(session) {
+    if (!currentUser) {
+        alert("Você precisa estar logado para adicionar um cartão.");
+        return;
+    }
+
+    const name = prompt("Digite o nome:");
+    const comment = prompt("Digite o comentário:");
+    const image = prompt("Digite a URL da imagem:");
+
+    if (name && comment && image) {
+        const cardData = { name, comment, image };
+
+        // Substituir espaços no nome por underscores e usar como ID
+        const cardID = name.replace(/\s+/g, '_').toLowerCase();
+
+        // Referência ao Firebase com o nome como chave
+        const ref = database.ref(`usuarios/${currentUser}/${session}/${cardID}`);
+        ref.set(cardData)
+            .then(() => {
+                const cardRow = document.getElementById(`card-row-${session}`);
+                cardRow.appendChild(createCard(cardData, cardID));
+                alert("Cartão adicionado com sucesso!");
+            })
+            .catch((error) => {
+                console.error("Erro ao adicionar cartão:", error);
+                alert("Erro ao adicionar cartão.");
+            });
+    } else {
+        alert("Todos os campos são obrigatórios!");
+    }
+}
+    
+        // Carregar todas as sessões ao iniciar
+        function loadAllSessions() {
+            ["filmes", "jogos", "livros", "animes","kids","series"].forEach((session) => loadCards(session));
+        }
+    
+        // Função para virar a carta ao clicar
+        function flipCard(event) {
+            const card = event.currentTarget;
+            card.classList.toggle("flipped");
+        }
+    
+ // Variável global para armazenar o cartão selecionado
+let selectedCard = null;
+
+// Mostrar menu de contexto (botão direito)
+function showContextMenu(event) {
+    event.preventDefault();
+    const contextMenu = document.getElementById("context-menu");
+    contextMenu.style.display = "flex";
+    contextMenu.style.left = `${event.pageX}px`;
+    contextMenu.style.top = `${event.pageY}px`;
+
+    selectedCard = event.currentTarget; // Guardar referência ao cartão
+}
+
+// Ocultar o menu de contexto ao clicar fora
+document.addEventListener("click", () => {
+    const contextMenu = document.getElementById("context-menu");
+    contextMenu.style.display = "none";
+});
+
+// Função para editar um campo do cartão
+function editCard(field) {
+    if (selectedCard) {
+        // Obter informações do cartão e do Firebase
+        const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
+        const session = cardRowId.split("-")[2]; // Ex: "animes"
+        const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+
+        if (!cardKey) {
+            alert("Erro: Não foi possível identificar o cartão.");
+            return;
+        }
+
+        const ref = database.ref(`usuarios/${currentUser}/${session}/${cardKey}`);
+
+        // Prompt para o novo valor
+        const newValue = prompt(`Digite o novo valor para ${field}:`);
+        if (newValue) {
+            // Atualizar no Firebase
+            const updateData = { [field]: newValue };
+            ref.update(updateData).then(() => {
+                // Atualizar na interface
+                const elementToUpdate = selectedCard.querySelector(`.${field}`);
+                if (field === "image") {
+                    elementToUpdate.src = newValue;
+                } else {
+                    elementToUpdate.textContent = newValue;
+                }
+                alert(`${field} atualizado com sucesso!`);
+            }).catch((error) => {
+                alert(`Erro ao atualizar ${field}: ${error.message}`);
+            });
+        }
+    }
+}
+
+function deleteCard() {
+    if (selectedCard) {
+        // Obter informações do cartão e do Firebase
+        const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
+        const session = cardRowId.split("-")[2]; // Ex: "animes"
+        const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+
+        if (!cardKey) {
+            alert("Erro: Não foi possível identificar o cartão.");
+            return;
+        }
+
+        const ref = database.ref(`usuarios/${currentUser}/${session}/${cardKey}`);
+
+        // Confirmar exclusão
+        if (confirm("Tem certeza de que deseja excluir este cartão?")) {
+            ref.remove()
+                .then(() => {
+                    selectedCard.remove(); // Remover da interface
+                    alert("Cartão excluído com sucesso!");
+                })
+                .catch((error) => {
+                    alert(`Erro ao excluir cartão: ${error.message}`);
+                });
+        }
+    }
+}
+
+// Criar cartões com a chave do Firebase
+function createCard(data, key) {
+    const cardContainer = document.createElement("div");
+    cardContainer.classList.add("card-container");
+    cardContainer.setAttribute("onclick", "flipCard(event)");
+    cardContainer.setAttribute("oncontextmenu", "showContextMenu(event)");
+    cardContainer.setAttribute("data-key", key); // Armazena a chave do Firebase
+
+    const card = document.createElement("div");
+    card.classList.add("card");
+
+    // Frente da carta
+    const front = document.createElement("div");
+    front.classList.add("front");
+    const img = document.createElement("img");
+    img.src = data.image || "https://via.placeholder.com/300x400";
+    img.alt = data.name || "Frente da Carta";
+    img.classList.add("image");
+    front.appendChild(img);
+
+    // Verso da carta
+    const back = document.createElement("div");
+    back.classList.add("back");
+
+    const cardName = document.createElement("div");
+    cardName.classList.add("name");
+    cardName.textContent = data.name || "Nome Desconhecido";
+
+    const cardText = document.createElement("div");
+    cardText.classList.add("comment");
+    cardText.textContent = data.comment || "Descrição não disponível";
+
+    back.appendChild(cardName);
+    back.appendChild(cardText);
+    card.appendChild(front);
+    card.appendChild(back);
+    cardContainer.appendChild(card);
+
+    return cardContainer;
+}
+
+function moveCard(newSession) {
+    if (!selectedCard) {
+        alert("Nenhum cartão selecionado.");
+        return;
+    }
+
+    // Obter informações do cartão e da sessão atual
+    const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
+    const currentSession = cardRowId.split("-")[2]; // Ex: "animes"
+    const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+
+    if (!cardKey) {
+        alert("Erro: Não foi possível identificar o cartão.");
+        return;
+    }
+
+    if (!newSession || !["filmes", "jogos", "livros", "animes", "kids", "series","editlayout"].includes(newSession)) {
+        alert("Sessão inválida.");
+        return;
+    }
+
+    // Referência ao cartão no Firebase
+    const currentRef = database.ref(`usuarios/${currentUser}/${currentSession}/${cardKey}`);
+    const newRef = database.ref(`usuarios/${currentUser}/${newSession}/${cardKey}`);
+
+    // Mover o cartão
+    currentRef.once("value", (snapshot) => {
+        const cardData = snapshot.val();
+        if (cardData) {
+            newRef.set(cardData) // Adicionar o cartão na nova sessão
+                .then(() => {
+                    currentRef.remove() // Remover o cartão da sessão atual
+                        .then(() => {
+                            selectedCard.remove(); // Remover da interface
+                            alert("Cartão movido com sucesso!");
+                        })
+                        .catch((error) => {
+                            console.error("Erro ao remover o cartão da sessão atual:", error);
+                        });
+                })
+                .catch((error) => {
+                    console.error("Erro ao mover o cartão para a nova sessão:", error);
+                });
+        } else {
+            alert("Erro: Não foi possível encontrar os dados do cartão.");
+        }
+    });
+}
+
+// Carregar cartões de uma sessão do Firebase
+
+// Carregar todas as sessões ao iniciar
+function loadAllSessions() {
+    ["filmes", "jogos", "livros","animes","kids","series","editlayout"].forEach((session) => loadCards(session));
+}
+
+let currentUser = null; // Variável global para armazenar o usuário logado
+
+// Mostrar formulário de registro
+function showRegister() {
+    document.getElementById("login-container").classList.add("hidden");
+    document.getElementById("login-container").classList.remove("active");
+    document.getElementById("register-container").classList.remove("hidden");
+    document.getElementById("register-container").classList.add("active");
+}
+
+function showLogin() {
+    document.getElementById("register-container").classList.add("hidden");
+    document.getElementById("register-container").classList.remove("active");
+    document.getElementById("login-container").classList.remove("hidden");
+    document.getElementById("login-container").classList.add("active");
+}
+
+// Registrar novo usuário
+function register() {
+    const username = document.getElementById("register-username").value;
+    const password = document.getElementById("register-password").value;
+
+    if (!username || !password) {
+        alert("Preencha todos os campos!");
+        return;
+    }
+
+    const ref = database.ref(`usuarios/${username}`);
+    ref.once("value", (snapshot) => {
+        if (snapshot.exists()) {
+            alert("Usuário já existe!");
+        } else {
+            ref.set({ senha: password })
+                .then(() => {
+                    alert("Usuário registrado com sucesso!");
+                    showLogin();
+                })
+                .catch((error) => {
+                    alert(`Erro ao registrar: ${error.message}`);
+                });
+        }
+    });
+}
+
+function loadCards(session) {
+    if (!currentUser) {
+        console.error("Nenhum usuário está logado.");
+        document.getElementById("register-container").classList.remove("active");
+            document.getElementById("register-container").classList.add("hidden");
+        return;
+    }
+
+    const ref = database.ref(`usuarios/${currentUser}/${session}`);
+    ref.once("value", (snapshot) => {
+        const data = snapshot.val();
+        const cardRow = document.getElementById(`card-row-${session}`);
+        cardRow.innerHTML = ""; // Limpar antes de adicionar
+
+        if (data) {
+            Object.entries(data).forEach(([key, cardData]) => {
+                cardRow.appendChild(createCard(cardData, key));
+            });
+        } else {
+            console.log(`Nenhum cartão encontrado para a sessão: ${session}`);
+        }
+    }).catch((error) => {
+        console.error(`Erro ao carregar cartões da sessão ${session}:`, error);
+    });
+}
+
+function moveCard() {
+    if (!selectedCard) {
+        alert("Nenhum cartão selecionado.");
+        return;
+    }
+
+    // Obter informações do cartão e da sessão atual
+    const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
+    const currentSession = cardRowId.split("-")[2]; // Ex: "animes"
+    const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+
+    if (!cardKey) {
+        alert("Erro: Não foi possível identificar o cartão.");
+        return;
+    }
+
+    // Referência ao cartão no Firebase
+    const currentRef = database.ref(`usuarios/${currentUser}/${currentSession}/${cardKey}`);
+    const newRef = database.ref(`usuarios/${currentUser}/${newSession}/${cardKey}`);
+
+    // Mover o cartão
+    currentRef.once("value", (snapshot) => {
+        const cardData = snapshot.val();
+        if (cardData) {
+            newRef.set(cardData) // Adicionar o cartão na nova sessão
+                .then(() => {
+                    currentRef.remove() // Remover o cartão da sessão atual
+                        .then(() => {
+                            selectedCard.remove(); // Remover da interface
+                            alert("Cartão movido com sucesso!");
+                        })
+                        .catch((error) => {
+                            console.error("Erro ao remover o cartão da sessão atual:", error);
+                        });
+                })
+                .catch((error) => {
+                    console.error("Erro ao mover o cartão para a nova sessão:", error);
+                });
+        } else {
+            alert("Erro: Não foi possível encontrar os dados do cartão.");
+        }
+    });
+}
+
+function moveCardTo(newSession) {
+    if (!selectedCard) {
+        alert("Nenhum cartão selecionado.");
+        return;
+    }
+
+    // Obter informações do cartão e da sessão atual
+    const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
+    const currentSession = cardRowId.split("-")[2]; // Ex: "animes"
+    const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+
+    if (!cardKey) {
+        alert("Erro: Não foi possível identificar o cartão.");
+        return;
+    }
+
+    // Referência ao cartão no Firebase
+    const currentRef = database.ref(`usuarios/${currentUser}/${currentSession}/${cardKey}`);
+    const newRef = database.ref(`usuarios/${currentUser}/${newSession}/${cardKey}`);
+
+    // Mover o cartão
+    currentRef.once("value", (snapshot) => {
+        const cardData = snapshot.val();
+        if (cardData) {
+            newRef.set(cardData) // Adicionar o cartão na nova sessão
+                .then(() => {
+                    currentRef.remove() // Remover o cartão da sessão atual
+                        .then(() => {
+                            selectedCard.remove(); // Remover da interface
+                            alert(`Cartão movido para ${newSession} com sucesso!`);
+                        })
+                        .catch((error) => {
+                            console.error("Erro ao remover o cartão da sessão atual:", error);
+                        });
+                })
+                .catch((error) => {
+                    console.error("Erro ao mover o cartão para a nova sessão:", error);
+                });
+        } else {
+            alert("Erro: Não foi possível encontrar os dados do cartão.");
+        }
+    });
+}
+
+// Login do usuário
+function login() {
+    const username = document.getElementById("login-username").value;
+    const password = document.getElementById("login-password").value;
+
+    if (!username || !password) {
+        alert("Preencha todos os campos!");
+        return;
+    }
+
+    const ref = database.ref(`usuarios/${username}`);
+    ref.once("value", (snapshot) => {
+        if (snapshot.exists() && snapshot.val().senha === password) {
+            alert("Login realizado com sucesso!");
+            currentUser = username;
+
+            // Salvar o usuário no Local Storage
+            localStorage.setItem("currentUser", currentUser);
+
+            // Atualizar o nome do usuário na barra
+            document.getElementById("user-display").textContent = `${currentUser}`;
+
+            // Mostrar a barra de navegação e as sessões
+            document.getElementById("navbar").classList.remove("hidden");
+            document.getElementById("filmes").classList.remove("hidden");
+            document.getElementById("jogos").classList.remove("hidden");
+            document.getElementById("livros").classList.remove("hidden");
+            document.getElementById("animes").classList.remove("hidden");
+            document.getElementById("kids").classList.remove("hidden");
+            document.getElementById("series").classList.remove("hidden");
+
+            // Mostrar os botões de adicionar carta
+            document.getElementById("add-card-filmes").classList.remove("hidden");
+            document.getElementById("add-card-jogos").classList.remove("hidden");
+            document.getElementById("add-card-livros").classList.remove("hidden");
+            document.getElementById("add-card-animes").classList.remove("hidden");
+            document.getElementById("add-card-kids").classList.remove("hidden");
+            document.getElementById("add-card-series").classList.remove("hidden");
+
+            // Ocultar o formulário de login
+            document.getElementById("login-container").classList.remove("active");
+            document.getElementById("login-container").classList.add("hidden");
+            document.getElementById("register-container").classList.remove("active");
+            document.getElementById("register-container").classList.add("hidden");
+    
+
+            // Carregar os cartões do usuário
+            loadAllSessions();
+            loadBackground();
+
+        } else {
+            alert("Usuário ou senha incorretos!");
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const storedUser = localStorage.getItem("currentUser");
+
+    if (storedUser) {
+        currentUser = storedUser;
+
+        // Atualizar o nome do usuário na barra
+        document.getElementById("user-display").textContent = `${currentUser}`;
+
+        // Mostrar elementos de usuário logado
+        document.getElementById("navbar").classList.remove("hidden");
+        ["filmes", "jogos", "livros", "animes", "kids", "series"].forEach((id) => {
+            document.getElementById(id).classList.remove("hidden");
+            document.getElementById(`add-card-${id}`).classList.remove("hidden");
+        });
+
+        // Ocultar os formulários de login e registro
+        document.getElementById("login-container").classList.add("hidden");
+        document.getElementById("register-container").classList.add("hidden");
+
+        // Carregar sessões e configurações
+        loadAllSessions();
+        loadBackground();
+    } else {
+        // Mostrar apenas o formulário de login
+        document.getElementById("login-container").classList.remove("hidden");
+        document.getElementById("login-container").classList.add("active");
+
+        document.getElementById("register-container").classList.add("hidden");
+        document.getElementById("register-container").classList.remove("active");
+    }
+});
+
+function logout() {
+    // Remover o usuário do Local Storage
+    localStorage.removeItem("currentUser");
+
+    // Redefinir a interface
+    currentUser = null;
+    document.getElementById("user-display").textContent = "";
+    document.getElementById("navbar").classList.add("hidden");
+    document.getElementById("filmes").classList.add("hidden");
+    document.getElementById("jogos").classList.add("hidden");
+    document.getElementById("livros").classList.add("hidden");
+    document.getElementById("animes").classList.add("hidden");
+    document.getElementById("kids").classList.add("hidden");
+    document.getElementById("series").classList.add("hidden");
+
+    // Mostrar o formulário de login
+    document.getElementById("login-container").classList.add("active");
+    document.getElementById("login-container").classList.remove("hidden");
+
+    // Recarregar a página para garantir que o estado seja atualizado
+    location.reload();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const contextMenu = document.getElementById("context-menu");
+
+    // Mostrar o menu de contexto ao clicar com o botão esquerdo
+    document.addEventListener("click", (event) => {
+        const isContextMenu = event.target.closest("#context-menu");
+        if (isContextMenu) return;
+
+        contextMenu.style.display = "none"; // Ocultar o menu ao clicar fora
+    });
+
+    document.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+        contextMenu.style.display = "flex";
+        contextMenu.style.left = `${event.pageX}px`;
+        contextMenu.style.top = `${event.pageY}px`;
+    });
+
+    // Mostrar submenu ao clicar no botão "Mover para Outra Sessão"
+    const submenuButton = document.querySelector(".submenu > button");
+    const submenuOptions = document.querySelector(".submenu-options");
+
+    submenuButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        submenuOptions.classList.toggle("hidden");
+    });
+});
+
+function toggleDropdown(event) {
+        // Evitar propagação do evento para o elemento pai
+        if (event) {
+            event.stopPropagation();
+        }
+
+        // Alternar a visibilidade do dropdown
+        document.getElementById("dropdownMenu").classList.toggle("show");
+    }
+
+    // Fechar o dropdown se o usuário clicar fora dele
+    window.onclick = function (event) {
+        if (!event.target.matches('.dropbtn') && !event.target.matches('#user-display')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    };
+
+    function saveBackground() {
+    const backgroundUrl = document.getElementById("background-url").value || "x"; // Enviar "x" se o campo estiver vazio
+    const iconUrl = document.getElementById("icon-url").value || "x"; // Enviar "x" se o campo estiver vazio
+    const color1 = document.getElementById("background-color1").value;
+    const color2 = document.getElementById("background-color2").value;
+
+    // Estilo dos botões
+    const bgColor = document.getElementById("button-bg-color").value;
+    const hoverBgColor = document.getElementById("button-hover-bg-color").value;
+    const textColor = document.getElementById("button-text-color").value;
+    const borderRadius = document.getElementById("button-border-radius").value;
+    const buttonWidth = document.getElementById("button-width").value;
+    const buttonHeight = document.getElementById("button-height").value;
+
+    const ref = database.ref(`usuarios/${currentUser}/background`);
+
+    // Salvar os dados no Firebase
+    ref.set({
+        url: backgroundUrl,
+        iconUrl: iconUrl,
+        width: backgroundWidth || 100,
+        height: backgroundHeight || 100,
+        color1: color1 || null,
+        color2: color2 || null,
+        buttonStyle: {
+            bgColor: bgColor || "#3498db",
+            hoverBgColor: hoverBgColor || "#2ecc71",
+            textColor: textColor || "#ffffff",
+            borderRadius: borderRadius || 25,
+            width: buttonWidth || 150,
+            height: buttonHeight || 40
+        }
+    })
+    .then(() => {
+        alert("Imagem de fundo, segunda imagem e estilo dos botões salvos com sucesso!");
+        previewBackground(); // Aplicar a pré-visualização após salvar
+    })
+    .catch((error) => {
+        console.error("Erro ao salvar os dados:", error);
+        alert("Erro ao salvar os dados.");
+    });
+}
+
+// Carregar a imagem de fundo ao iniciar
+function loadBackground() {
+    if (!currentUser) return;
+
+    const ref = database.ref(`usuarios/${currentUser}/background`);
+
+    ref.once("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            let backgroundStyle = "";
+
+            // Adicionar a imagem de fundo, se existir
+            if (data.url && data.url !== "x") {
+                backgroundStyle += `url('${data.url}')`;
+                document.getElementById("background-url").value = data.url;
+            } else {
+                document.getElementById("background-url").value = "";
+            }
+
+            // Adicionar a imagem de fundo, se existir
+            if (data.iconUrl && data.iconUrl !== "x") {
+                document.getElementById("icon-Url").value = data.iconUrl;
+                document.getElementById("user-icon").src = data.iconUrl;
+            } else {
+                document.getElementById("icon-Url").value = "";
+                document.getElementById("user-icon").src = "";
+            }
+
+            // Adicionar a cor de fundo (gradiente ou sólida)
+            if (data.color1 && data.color2 && data.color1 !== data.color2) {
+                backgroundStyle += `, linear-gradient(135deg, ${data.color1}, ${data.color2})`;
+            } else if (data.color1) {
+                backgroundStyle += `, ${data.color1}`;
+            }
+
+            // Aplicar o estilo combinado ao body
+            document.body.style.background = backgroundStyle;
+            //document.body.iconUrl = iconUrl;
+
+
+            // Atualizar os controles de fundo
+            document.getElementById("background-color1").value = data.color1 || "#ffffff";
+            document.getElementById("background-color2").value = data.color2 || "#ffffff";
+
+
+            // Atualizar os controles de estilo dos botões
+            if (data.buttonStyle) {
+                document.getElementById("button-bg-color").value = data.buttonStyle.bgColor || "#3498db";
+                document.getElementById("button-hover-bg-color").value = data.buttonStyle.hoverBgColor || "#2ecc71";
+                document.getElementById("button-text-color").value = data.buttonStyle.textColor || "#ffffff";
+                document.getElementById("button-border-radius").value = data.buttonStyle.borderRadius || 25;
+                document.getElementById("button-width").value = data.buttonStyle.width || 150;
+                document.getElementById("button-height").value = data.buttonStyle.height || 40;
+
+                updateButtonPreview(); // Atualizar a pré-visualização dos botões
+            }
+        }
+    }).catch((error) => {
+        console.error("Erro ao carregar os dados:", error);
+    });
+}
+
+// Chamar a função para carregar a imagem de fundo ao carregar a página
+document.addEventListener("DOMContentLoaded", loadBackground);
+
+// Pré-visualizar a imagem de fundo
+function previewBackground() {
+    const backgroundUrl = document.getElementById("background-url").value;
+    const iconUrl = document.getElementById("user-icon").value;
+    const color1 = document.getElementById("background-color1").value;
+    const color2 = document.getElementById("background-color2").value;
+
+    let backgroundStyle = "";
+
+    // Adicionar a imagem de fundo, se fornecida
+    if (backgroundUrl && backgroundUrl !== "x") {
+        backgroundStyle += `url('${backgroundUrl}')`;
+    }
+    // Adicionar a imagem de fundo, se fornecida
+    if (iconUrl && iconUrl !== "x") {
+        backgroundStyle += `iconUrl('${iconUrl}')`;
+    }
+
+
+    // Adicionar a cor de fundo (gradiente ou sólida)
+    if (color1 && color2 && color1 !== color2) {
+        backgroundStyle += `, linear-gradient(135deg, ${color1}, ${color2})`;
+    } else if (color1) {
+        backgroundStyle += `, ${color1}`;
+    }
+
+    // Aplicar o estilo combinado ao body
+    document.body.style.background = backgroundStyle;
+if (iconUrl && iconUrl !== "x") {
+    document.getElementById("user-icon").src = iconUrl;
+}
+
+    // Ajustar o tamanho e repetição para cada camada
+    if (backgroundUrl && backgroundUrl !== "x") {
+        document.body.style.backgroundSize = "cover"; // Imagem: cover, Gradiente: 100% 100%
+        document.body.style.backgroundRepeat = "no-repeat"; // Evitar repetição
+        document.body.style.backgroundPosition = "center"; // Centralizar ambas as camadas
+    } else {
+        document.body.style.backgroundSize = "100% 100%"; // Apenas gradiente ou cor sólida
+        document.body.style.backgroundRepeat = "no-repeat"; // Evitar repetição
+    }
+}
+
+// Pré-visualizar a cor de fundo
+function previewBackgroundColor() {
+    const color1 = document.getElementById("background-color1").value;
+    const color2 = document.getElementById("background-color2").value;
+
+    if (color1 && color2 && color1 !== color2) {
+        // Aplicar gradiente
+        document.body.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+    } else {
+        // Aplicar cor sólida
+        document.body.style.background = color1;
+    }
+}
+
+// Salvar a cor de fundo no Firebase
+function saveBackground() {
+    const backgroundUrl = document.getElementById("background-url").value || "x"; // Enviar "x" se o campo estiver vazio
+    const icon_Url = document.getElementById("icon-Url").value || "x"; // Enviar "x" se o campo estiver vazio
+    const color1 = document.getElementById("background-color1").value;
+    const color2 = document.getElementById("background-color2").value;
+
+    // Estilo dos botões
+    const bgColor = document.getElementById("button-bg-color").value;
+    const hoverBgColor = document.getElementById("button-hover-bg-color").value;
+    const textColor = document.getElementById("button-text-color").value;
+    const borderRadius = document.getElementById("button-border-radius").value;
+    const buttonWidth = document.getElementById("button-width").value;
+    const buttonHeight = document.getElementById("button-height").value;
+
+    const ref = database.ref(`usuarios/${currentUser}/background`);
+
+    // Salvar os dados no Firebase
+    ref.set({
+        url: backgroundUrl,
+        iconUrl: icon_Url,
+        color1: color1 || null,
+        color2: color2 || null,
+        buttonStyle: {
+            bgColor: bgColor || "#3498db",
+            hoverBgColor: hoverBgColor || "#2ecc71",
+            textColor: textColor || "#ffffff",
+            borderRadius: borderRadius || 25,
+            width: buttonWidth || 150,
+            height: buttonHeight || 40
+        }
+    })
+    .then(() => {
+        alert("Imagem de fundo, segunda imagem e estilo dos botões salvos com sucesso!");
+        loadBackground(); // Recarregar os dados para atualizar a interface
+    })
+    .catch((error) => {
+        console.error("Erro ao salvar os dados:", error);
+        alert("Erro ao salvar os dados.");
+    });
+}
+
+function updateButtonPreview() {
+    const bgColor = document.getElementById("button-bg-color").value;
+    const hoverBgColor = document.getElementById("button-hover-bg-color").value;
+    const textColor = document.getElementById("button-text-color").value;
+    const borderRadius = document.getElementById("button-border-radius").value;
+    const buttonWidth = document.getElementById("button-width").value;
+    const buttonHeight = document.getElementById("button-height").value;
+
+    // Atualizar os botões na interface
+    const buttons = document.querySelectorAll("#add-card-filmes, #add-card-jogos, #add-card-livros, #add-card-animes, #add-card-kids, #add-card-series");
+    buttons.forEach(button => {
+        button.style.backgroundColor = bgColor;
+        button.style.color = textColor;
+        button.style.borderRadius = `${borderRadius}px`;
+        button.style.width = `${buttonWidth}px`;
+        button.style.height = `${buttonHeight}px`;
+    });
+
+    // Atualizar o hover dinamicamente
+    const style = document.getElementById("dynamic-button-style");
+    if (style) style.remove(); // Remover estilo antigo
+
+    const hoverStyle = document.createElement("style");
+    hoverStyle.id = "dynamic-button-style";
+    hoverStyle.innerHTML = `
+        #add-card-filmes:hover, #add-card-jogos:hover, #add-card-livros:hover, #add-card-animes:hover, #add-card-kids:houver, #add-card-series:hover {
+            background-color: ${hoverBgColor};
+        }
+    `;
+    document.head.appendChild(hoverStyle);
+
+    // Atualizar os valores exibidos
+    document.getElementById("button-border-radius-value").textContent = `${borderRadius}px`;
+    document.getElementById("button-width-value").textContent = `${buttonWidth}px`;
+    document.getElementById("button-height-value").textContent = `${buttonHeight}px`;
+}
+
+
+function removeImage() {
+    // Define "x" no campo de URL da imagem de fundo
+    document.getElementById("background-url").value = "x";
+    // Remove a imagem de fundo da visualização
+    document.body.style.backgroundImage = "none";
+}
+
+function removeIcon() {
+    // Define "x" no campo de URL da imagem de fundo
+    document.getElementById("icon-url").value = "x";
+    // Remove a imagem de fundo da visualização
+    document.body.style.backgroundImage = "none";
+}
+
+    </script>
+    
+</body>
+</html>
