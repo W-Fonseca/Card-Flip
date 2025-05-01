@@ -104,38 +104,40 @@
 
 
         .footer {
-  grid-area: footer;
-  background: #002238;
+            grid-area: footer;
+            background: #002238;
             border: #0fe 1px solid;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  box-sizing: border-box;
-  padding: 8px 12px; /* opcional para espaçamento */
-}
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-sizing: border-box;
+            padding: 8px 12px;
+            /* opcional para espaçamento */
+        }
 
 
-.trofeus-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: nowrap;
-  overflow: hidden;
-}
+        .trofeus-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+            overflow: hidden;
+        }
 
-.trofeus-container img {
-  max-height: 32px;     /* 🔑 limita altura visível */
-  width: auto;
-  object-fit: contain;
-  display: hidden;
-}
+        .trofeus-container img {
+            max-height: 32px;
+            /* 🔑 limita altura visível */
+            width: auto;
+            object-fit: contain;
+            display: hidden;
+        }
 
-.cont-trofeu {
-  font-weight: bold;
-  font-size: 1rem;
-  white-space: nowrap;
-}
+        .cont-trofeu {
+            font-weight: bold;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
 
 
 
@@ -216,7 +218,7 @@
             /* Cor neon ao passar o mouse */
         }
 
-        
+
         /* ################## parte de LOGIN E REGISTRO ########################## */
 
         #login-container,
@@ -261,7 +263,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         #login-container.hidden,
@@ -506,21 +508,6 @@
             transform: rotateY(180deg);
         }
 
-        /* Botão para adicionar carta */
-        #add-card-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #add-card-btn:hover {
-            background-color: #2980b9;
-        }
 
         /* ################ FIM CARD ################### */
 
@@ -818,34 +805,34 @@
 
 
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    width: 10%;
-    background-color: #1f2a38;
-    border-radius: 8px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    overflow: hidden;
-    border: 1px solid #2c3e50;
-    animation: fadeIn 0.2s ease-in-out;
-}
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            width: 10%;
+            background-color: #1f2a38;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            overflow: hidden;
+            border: 1px solid #2c3e50;
+            animation: fadeIn 0.2s ease-in-out;
+        }
 
-.dropdown-content button {
-    width: 100%;
-    background: transparent;
-    border: none;
-    text-align: center;
-    font-size: 14px;
-    color: #ecf0f1;
+        .dropdown-content button {
+            width: 100%;
+            background: transparent;
+            border: none;
+            text-align: center;
+            font-size: 14px;
+            color: #ecf0f1;
 
-    transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease;
 
-}
+        }
 
-.dropdown-content button:hover {
-    background-color: #34495e;
-}
+        .dropdown-content button:hover {
+            background-color: #34495e;
+        }
 
         .show {
             display: block;
@@ -863,72 +850,98 @@
             /* garante que fique atrás do conteúdo */
         }
 
-        .context-menu {
+        #trofeu-submenu {
+            position: absolute;
+            background-color: #1f2a38;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            border: 1px solid #2c3e50;
+            padding: 4px 0;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        #trofeu-submenu button {
+            padding: 10px 16px;
+            background-color: transparent;
+            border: none;
+            color: #ecf0f1;
+            text-align: left;
+            font-size: 14px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            position: relative;
+        }
+
+        #trofeu-submenu button:hover {
+            background-color: #34495e;
+        }
+
+        #trofeu-submenu img {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+        }
+
+        .menu, .submenu, .subsubmenu {
+    display: none;
     position: absolute;
     background-color: #1f2a38;
-    border-radius: 8px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    display: none;
-    flex-direction: column;
-    z-index: 1000;
     border: 1px solid #2c3e50;
-    padding: 4px 0;
+    border-radius: 10px;
+    padding: 10px;
+    z-index: 1000;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     animation: fadeIn 0.2s ease-in-out;
 }
 
-.context-menu button {
-    padding: 10px 16px;
+.menu, .submenu{
+    width: 20%;
+}
+
+.menu button,
+.menu div,
+.submenu button,
+.submenu2 button {
+    width: 100%;
     background-color: transparent;
-    border: none;
     color: #ecf0f1;
+    border: none;
+    padding: 3%;
     text-align: left;
-    cursor: pointer;
     font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
-.context-menu button:hover {
+.menu button:hover,
+.menu div:hover,
+.submenu button:hover,
+.submenu2 button:hover {
     background-color: #34495e;
+    border-radius: 6px;
 }
 
-.submenu {
-    position: relative;
+.removertrofeu {
+    background: linear-gradient(#c03a2b60); /* vermelho vivo */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
 }
 
-.submenu-options {
-    position: absolute;
-    top: 100%; /* Para que o submenu apareça abaixo do item pai */
-    left: 0; /* Para alinhar o submenu à esquerda do item pai */
-    background-color: #1f2a38; /* Cor de fundo escura */
-    border-radius: 8px; /* Bordas arredondadas */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Sombra suave */
-    display: none; /* Inicialmente escondido */
-    flex-direction: column; /* Organizar os itens verticalmente */
-    z-index: 1000; /* Garante que o submenu fique acima de outros elementos */
-    border: 1px solid #2c3e50; /* Borda sutil */
-    padding: 4px 0; /* Espaçamento interno vertical */
-    animation: fadeIn 0.2s ease-in-out; /* Adiciona uma pequena animação ao aparecer */
-    min-width: 150px; /* Defina uma largura mínima para o submenu */
-}
-
-.submenu:hover .submenu-options {
-    display: flex; /* Exibe o submenu ao passar o mouse no item pai */
-}
-
-.submenu-options button {
-    padding: 10px 16px; /* Espaçamento interno nos botões */
-    background-color: transparent; /* Fundo transparente para herdar a cor do submenu */
-    border: none; /* Remove a borda padrão dos botões */
-    color: #ecf0f1; /* Cor do texto clara */
-    text-align: left; /* Alinha o texto à esquerda */
-    cursor: pointer; /* Indica que é clicável */
-    font-size: 14px; /* Tamanho da fonte */
-    transition: background-color 0.2s ease; /* Transição suave ao passar o mouse */
-    width: 100%; /* Faz os botões ocuparem toda a largura do submenu */
-}
-
-.submenu-options button:hover {
-    background-color: #34495e; /* Cor de fundo ao passar o mouse */
+.removertrofeu:hover {
+    background: #c0392b, /* inverte as cores no hover */
 }
 
         .content-container {
@@ -1108,12 +1121,61 @@
             cursor: pointer;
         }
 
-        .timestamp{
+        .timestamp {
             font-size: 80%;
             color: #ffffff44;
         }
 
         /* ############################### FIM CHAT BOX ########################*/
+
+        #card-input-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        #card-input-modal .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 320px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        #card-input-modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        #card-input-modal .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #card-input-modal .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -1181,9 +1243,6 @@
 
             <button class="toggle-button" onclick="toggleSidebar()">Amigos</button>
 
-
-
-
         </div>
         <div class="content">
             <img id="background-image" src="">
@@ -1193,8 +1252,6 @@
                         <!-- Cartas de filmes vão aqui -->
                     </div>
                 </div>
-                <button id="add-card-filmes" class="hidden" onclick="addCard('filmes')">Adicionar Carta de
-                    Filme</button>
             </div>
 
             <div id="jogos" class="content-container hidden">
@@ -1203,7 +1260,6 @@
                         <!-- Cartas de jogos vão aqui -->
                     </div>
                 </div>
-                <button id="add-card-jogos" class="hidden" onclick="addCard('jogos')">Adicionar Carta de Jogo</button>
             </div>
 
             <div id="livros" class="content-container hidden">
@@ -1212,8 +1268,6 @@
                         <!-- Cartas de livros vão aqui -->
                     </div>
                 </div>
-                <button id="add-card-livros" class="hidden" onclick="addCard('livros')">Adicionar Carta de
-                    Livro</button>
             </div>
 
             <div id="animes" class="content-container hidden">
@@ -1222,8 +1276,6 @@
                         <!-- Cartas de animes/cartoons vão aqui -->
                     </div>
                 </div>
-                <button id="add-card-animes" class="hidden" onclick="addCard('animes')">Adicionar Carta de
-                    Anime/Cartoon</button>
             </div>
 
             <div id="kids" class="content-container hidden">
@@ -1232,7 +1284,6 @@
                         <!-- Cartas de kids vão aqui -->
                     </div>
                 </div>
-                <button id="add-card-kids" class="hidden" onclick="addCard('kids')">Adicionar Carta de kids</button>
             </div>
 
             <div id="series" class="content-container hidden">
@@ -1241,53 +1292,42 @@
                         <!-- Cartas de séries vão aqui -->
                     </div>
                 </div>
-                <button id="add-card-series" class="hidden" onclick="addCard('series')">Adicionar Carta de
-                    Série</button>
             </div>
-            <div id="context-menu" class="context-menu">
+
+            <div id="menu" class="menu">
+                <button class="BotaoDireitoMouse" id="add-card-btn" onclick="openCardInputModal()">Adicionar
+                    Carta</button>
                 <button class="BotaoDireitoMouse" onclick="editCard('name')">Editar Nome</button>
                 <button class="BotaoDireitoMouse" onclick="editCard('comment')">Editar Comentário</button>
                 <button class="BotaoDireitoMouse" onclick="editCard('image')">Editar Imagem</button>
                 <button class="BotaoDireitoMouse" onclick="editCardCrop()">Editar Crop</button>
                 <button class="BotaoDireitoMouse" onclick="deleteCard()">Excluir</button>
-                <div class="BotaoDireitoMouse submenu">
-                    <button>Mover para Outra Sessão</button>
-                    <div class="submenu-options hidden">
-                        <button onclick="moveCardTo('filmes')">Filmes</button>
-                        <button onclick="moveCardTo('jogos')">Jogos</button>
-                        <button onclick="moveCardTo('livros')">Livros</button>
-                        <button onclick="moveCardTo('animes')">Animes/Cartoons</button>
-                        <button onclick="moveCardTo('kids')">Kids</button>
-                        <button onclick="moveCardTo('series')">Séries</button>
-                    </div>
-                </div>
-                <div class="BotaoDireitoMouse submenu">
-                    <button class="BotaoDireitoMouse hidden" id="atribuir-trofeu-btn" style="width: 100%;">Atribuir
-                        Troféu</button>
-                    <div class="submenu-options hidden">
-                        <button onclick="atribuirTrofeu('platina')" style="position: relative;">
-                            100%
-                            <img id="trofeu-img-ouro" alt="Platinado"
-                                style="width: 20px; height: 20px; position: absolute; right: 10%; top: 50%; transform: translateY(-50%);">
-                        </button>
-
-                        <button onclick="atribuirTrofeu('zerado')" style="position: relative;">
-                            Zerado
-                            <img id="trofeu-img-prata" alt="Zerado"
-                                style="width: 20px; height: 20px; position: absolute; right: 10%; top: 50%; transform: translateY(-50%);">
-                        </button>
-
-                        <button onclick="atribuirTrofeu('jogado')" style="position: relative;">
-                            Jogado
-                            <img id="trofeu-img-bronze" alt="Jogado"
-                                style="width: 20px; height: 20px; position: absolute; right: 10%; top: 50%; transform: translateY(-50%);">
-                        </button>
-                        <button class="removertrofeu" onclick="removerTrofeu()">Remover Troféu</button>
-
-                    </div>
-
-                </div>
+                <button class="BotaoDireitoMouse" id="opcao1">Mover para Outra Sessão</button>
+                <button class="BotaoDireitoMouse" id="opcao2">Atribuir Troféu</button>
                 <button class="copiarCard hidden" onclick="copyCardToMyProfile()">Copiar Card</button>
+            </div>
+            <div id="submenu" class="submenu">
+                <button onclick="moveCardTo('filmes')">Filmes</button>
+                <button onclick="moveCardTo('jogos')">Jogos</button>
+                <button onclick="moveCardTo('livros')">Livros</button>
+                <button onclick="moveCardTo('animes')">Animes/Cartoons</button>
+                <button onclick="moveCardTo('kids')">Kids</button>
+                <button onclick="moveCardTo('series')">Séries</button>
+            </div>
+            <div id="submenu2" class="submenu">
+                <button onclick="atribuirTrofeu('platina')" style="position: relative;">100%
+                    <img id="trofeu-img-ouro" alt="Platinado"
+                        style="width: 20px; height: 20px; position: absolute; right: 10%; top: 50%; transform: translateY(-50%);">
+                </button>
+                <button onclick="atribuirTrofeu('zerado')" style="position: relative;">Zerado
+                    <img id="trofeu-img-prata" alt="Zerado"
+                        style="width: 20px; height: 20px; position: absolute; right: 10%; top: 50%; transform: translateY(-50%);">
+                </button>
+                <button onclick="atribuirTrofeu('jogado')" style="position: relative;">Jogado
+                    <img id="trofeu-img-bronze" alt="Jogado"
+                        style="width: 20px; height: 20px; position: absolute; right: 10%; top: 50%; transform: translateY(-50%);">
+                </button>
+                <button class="removertrofeu" onclick="removerTrofeu()">Remover Troféu</button>
             </div>
         </div>
         <div class="sidebar">
@@ -1342,16 +1382,13 @@
         <button onclick="previewBackground()">Pré-visualizar</button>
         <button onclick="removeImage()">Remover Imagem</button>
         <div id="editlayout-image"
-            style="position: relative; width: 100%; height: 263px; overflow: hidden; border: 1px solid #ccc; margin-top: 10%;">
+            style="position: relative; width: 100%; height: 100%; overflow: hidden; border: 1px solid #ccc; margin-top: 10%;">
             <!-- Imagem de fundo será aplicada via CSS -->
-            <img id="editlayout-child" src=""
-                style="position: absolute; cursor: grab; width: auto; height: 100%; transform-origin: center center; transform: scale(1); left: 0px; top: 0px;">
+            <img id="editlayout-child" src="" style="position: absolute; cursor: grab; width: 100%; height: 100%;">
         </div>
         <label>Zoom da Imagem de Fundo:</label>
         <input id="editlayout-zoom" type="range" min="0.3" max="2" step="0.001" value="1">
 
-        <br>
-        <br>
         <label for="icon-url">URL do Icone:</label>
         <input type="text" id="icon-Url" placeholder="Digite a URL da imagem">
         <button onclick="removeIcon()">Remover Icone</button>
@@ -1363,8 +1400,6 @@
                 <img id="editicon-child" src=""
                     style="position: absolute; cursor: grab; width: auto; height: 100%; transform-origin: center center; transform: scale(1); left: 0px; top: 0px;">
             </div>
-            <label style="margin-left: 50px; max-width: 300px;">Para alterar o local do Icone, mexa no icone na Barra,
-                posicione aonde você quer e Salve.</label>
 
         </div>
         <!--<label>Tamanho do Ícone:</label>-->
@@ -1388,39 +1423,23 @@
             <input type="color" id="user-border-color" value="#000000">
         </div>
 
-        <h3>Personalizar Botões</h3>
-        <div style="display: flex; align-items: center;">
-            <div style="display: flex; align-items: center;">
-                <label for="button-bg-color">Cor de Fundo:</label>
-                <input type="color" id="button-bg-color" value="#3498db">
-            </div>
-            <div style="display: flex; align-items: center;">
-                <label for="button-hover-bg-color">Cor de Fundo:</label>
-                <input type="color" id="button-hover-bg-color" value="#2ecc71">
-            </div>
-            <div style="display: flex; align-items: center;">
-                <label for="button-text-color">Cor do Texto:</label>
-                <input type="color" id="button-text-color" value="#ffffff">
-            </div>
-        </div>
-        <br>
-        <div style="display: flex; align-items: center;">
-            <label for="button-border-radius">Borda Arredondada (px):</label>
-            <span id="button-border-radius-value">25px</span>
-        </div>
-        <input type="range" id="button-border-radius" min="0" max="50" value="25" oninput="updateButtonPreview()">
-        <div style="display: flex; align-items: center;">
-            <label for="button-width">Largura do Botão (px):</label>
-            <span id="button-width-value">150px</span>
-        </div>
-        <input type="range" id="button-width" min="50" max="300" value="150" oninput="updateButtonPreview()">
-        <div style="display: flex; align-items: center;">
-            <label for="button-height">Altura do Botão (px):</label>
-            <span id="button-height-value">40px</span>
-        </div>
-        <input type="range" id="button-height" min="20" max="100" value="40" oninput="updateButtonPreview()">
         <button id="savebackground" onclick="saveBackground()">Salvar BackGround</button>
     </div>
+
+    <div id="card-input-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Adicionar Novo Cartão</h2>
+            <input type="text" id="input-card-name" placeholder="Nome da Carta">
+            <input type="text" id="input-card-comment" placeholder="Comentário">
+            <input type="text" id="input-card-image" placeholder="URL da Imagem">
+            <div class="modal-buttons">
+                <button onclick="submitCardInput()">Adicionar</button>
+                <button onclick="closeCardInputModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+
 </body>
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
@@ -1443,6 +1462,41 @@
         measurementId: "G-6VX3Z36RQ9"
     };
 
+    document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+        menu.style.left = e.pageX + 'px';
+        menu.style.top = e.pageY + 'px';
+        menu.style.display = 'block';
+        submenu.style.display = 'none';
+        subsubmenu1.style.display = 'none';
+        subsubmenu2.style.display = 'none';
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!menu.contains(e.target) && !submenu.contains(e.target)) {
+            menu.style.display = 'none';
+            submenu.style.display = 'none';
+            submenu2.style.display = 'none';
+            subsubmenu1.style.display = 'none';
+            subsubmenu2.style.display = 'none';
+        }
+    });
+
+    opcao1.addEventListener('click', function (e) {
+        submenu.style.left = (menu.offsetLeft + menu.offsetWidth) + 'px';
+        submenu.style.top = menu.offsetTop + 'px';
+        submenu.style.display = 'block';
+        submenu2.style.display = 'none';
+        submenu2.style.display = 'none';
+    });
+
+    opcao2.addEventListener('click', function (e) {
+        submenu2.style.left = (menu.offsetLeft + menu.offsetWidth) + 'px';
+        submenu2.style.top = menu.offsetTop + 'px';
+        submenu2.style.display = 'block';
+        submenu.style.display = 'none';
+        submenu.style.display = 'none';
+    });
 
 
     // Variável global para armazenar o cartão selecionado
@@ -1485,10 +1539,7 @@
 
             // Mostrar elementos de usuário logado
             document.getElementById("navbar").classList.remove("hidden");
-            ["filmes", "jogos", "livros", "animes", "kids", "series"].forEach((id) => {
-                document.getElementById(id).classList.remove("hidden");
-                document.getElementById(`add-card-${id}`).classList.remove("hidden");
-            });
+
 
             // Ocultar os formulários de login e registro
             document.getElementById("login-container").classList.add("hidden");
@@ -1513,42 +1564,8 @@
         }
     });
 
-    // Ocultar o menu de contexto ao clicar fora
-    document.addEventListener("click", () => {
-        const contextMenu = document.getElementById("context-menu");
-        contextMenu.style.display = "none";
-    });
-
     document.addEventListener("DOMContentLoaded", () => {
-        const contextMenu = document.getElementById("context-menu");
-
-        // Mostrar o menu de contexto ao clicar com o botão esquerdo
-        document.addEventListener("click", (event) => {
-            const isContextMenu = event.target.closest("#context-menu");
-            if (isContextMenu) return;
-
-            contextMenu.style.display = "none"; // Ocultar o menu ao clicar fora
-        });
-
-        document.addEventListener("contextmenu", (event) => {
-            event.preventDefault();
-            contextMenu.style.display = "flex";
-            contextMenu.style.left = `${event.pageX}px`;
-            contextMenu.style.top = `${event.pageY}px`;
-        });
-
-        // Mostrar submenu ao clicar no botão "Mover para Outra Sessão"
-        const submenuButton = document.querySelector(".submenu > button");
-        const submenuOptions = document.querySelector(".submenu-options");
-
-        submenuButton.addEventListener("click", (event) => {
-            event.stopPropagation();
-            submenuOptions.classList.toggle("hidden");
-        });
-    });
-
-    document.addEventListener('click', () => {
-        document.getElementById('context-menu').style.display = 'none';
+        const contextMenu = document.getElementById("menu");
     });
 
     firebase.database().ref("messages").orderByKey().on("child_added", function (snapshot) {
@@ -1569,8 +1586,6 @@
     <span class="timestamp">${msg.timestamp || ""}</span>
   </div>
 `;
-
-
         messagesDiv.appendChild(messageElement);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     });
@@ -1619,29 +1634,52 @@
     }
 
     // Função para adicionar novo cartão ao Firebase e à interface
-    function addCard(session) {
+    function openCardInputModal() {
+        document.getElementById('card-input-modal').classList.remove('hidden');
+    }
+
+    function closeCardInputModal() {
+        document.getElementById('card-input-modal').classList.add('hidden');
+        document.getElementById('input-card-name').value = '';
+        document.getElementById('input-card-comment').value = '';
+        document.getElementById('input-card-image').value = '';
+    }
+
+    function submitCardInput() {
         if (!currentUser) {
             alert("Você precisa estar logado para adicionar um cartão.");
             return;
         }
 
-        const name = prompt("Digite o nome:");
-        const comment = prompt("Digite o comentário:");
-        const image = prompt("Digite a URL da imagem:");
+        const name = document.getElementById('input-card-name').value.trim();
+        const comment = document.getElementById('input-card-comment').value.trim();
+        const image = document.getElementById('input-card-image').value.trim();
+
+        const sections = ['filmes', 'jogos', 'livros', 'animes', 'kids', 'series'];
+        let session = null;
+        for (let s of sections) {
+            const el = document.getElementById(s);
+            if (el && el.classList.contains('active')) {
+                session = s;
+                break;
+            }
+        }
+
+        if (!session) {
+            alert("Nenhuma seção ativa encontrada.");
+            return;
+        }
 
         if (name && comment && image) {
             const cardData = { name, comment, image };
-
-            // Substituir espaços no nome por underscores e usar como ID
             const cardID = name.replace(/\s+/g, '_').toLowerCase();
 
-            // Referência ao Firebase com o nome como chave
             const ref = database.ref(`usuarios/${currentUser}/${session}/${cardID}`);
             ref.set(cardData)
                 .then(() => {
                     const cardRow = document.getElementById(`card-row-${session}`);
                     cardRow.appendChild(createCard(cardData, cardID));
-                    alert("Cartão adicionado com sucesso!");
+                    closeCardInputModal();
                 })
                 .catch((error) => {
                     console.error("Erro ao adicionar cartão:", error);
@@ -1651,6 +1689,9 @@
             alert("Todos os campos são obrigatórios!");
         }
     }
+
+
+
 
     // Carregar todas as sessões ao iniciar
     function loadAllSessions() {
@@ -1663,31 +1704,7 @@
         card.classList.toggle("flipped");
     }
 
-    // Mostrar menu de contexto (botão direito)
-    // Mostrar menu de contexto (botão direito)
-    function showContextMenu(event) {
-        event.preventDefault();
-        const contextMenu = document.getElementById("context-menu");
-        contextMenu.style.display = "flex";
-        contextMenu.style.left = `${event.pageX}px`;
-        contextMenu.style.top = `${event.pageY}px`;
-        selectedCard = event.currentTarget; // Guardar referência ao cartão
 
-        // Verificar se está na sessão de jogos
-        const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-jogos"
-        const session = cardRowId.split("-")[2]; // Ex: "jogos"
-        const atribuirTrofeuBtn = document.getElementById("atribuir-trofeu-btn");
-        if (session === "jogos") {
-            atribuirTrofeuBtn.classList.remove("hidden");
-        } else {
-            atribuirTrofeuBtn.classList.add("hidden");
-
-        }
-    }
-
-
-    // Função para atribuir troféu
-    // Função para atribuir troféu
     function atribuirTrofeu(tipo) {
         if (selectedCard) {
             // Obter informações do cartão e do Firebase
@@ -2124,14 +2141,6 @@
                 document.getElementById("kids").classList.remove("hidden");
                 document.getElementById("series").classList.remove("hidden");
 
-                // Mostrar os botões de adicionar carta
-                document.getElementById("add-card-filmes").classList.remove("hidden");
-                document.getElementById("add-card-jogos").classList.remove("hidden");
-                document.getElementById("add-card-livros").classList.remove("hidden");
-                document.getElementById("add-card-animes").classList.remove("hidden");
-                document.getElementById("add-card-kids").classList.remove("hidden");
-                document.getElementById("add-card-series").classList.remove("hidden");
-
                 // Ocultar o formulário de login
                 document.getElementById("login-container").classList.remove("active");
                 document.getElementById("login-container").classList.add("hidden");
@@ -2175,42 +2184,11 @@
         location.reload();
     }
 
-    function toggleDropdown(event) {
-        // Evitar propagação do evento para o elemento pai
-        if (event) {
-            event.stopPropagation();
-        }
-
-        // Alternar a visibilidade do dropdown
-        document.getElementById("dropdownMenu").classList.toggle("show");
-    }
-
-    // Fechar o dropdown se o usuário clicar fora dele
-    window.onclick = function (event) {
-        if (!event.target.matches('.dropbtn') && !event.target.matches('#user-display')) {
-            var dropdowns = document.getElementsByClassName("dropdown-content");
-            for (var i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
-                }
-            }
-        }
-    };
-
     function saveBackground() {
         const backgroundUrl = document.getElementById("background-url").value || "x"; // Enviar "x" se o campo estiver vazio
         const iconUrl = document.getElementById("icon-url").value || "x"; // Enviar "x" se o campo estiver vazio
         const color1 = document.getElementById("background-color1").value;
         const color2 = document.getElementById("background-color2").value;
-
-        // Estilo dos botões
-        const bgColor = document.getElementById("button-bg-color").value;
-        const hoverBgColor = document.getElementById("button-hover-bg-color").value;
-        const textColor = document.getElementById("button-text-color").value;
-        const borderRadius = document.getElementById("button-border-radius").value;
-        const buttonWidth = document.getElementById("button-width").value;
-        const buttonHeight = document.getElementById("button-height").value;
 
         const ref = database.ref(`usuarios/${currentUser}/background`);
 
@@ -2222,14 +2200,6 @@
             height: backgroundHeight || 100,
             color1: color1 || null,
             color2: color2 || null,
-            buttonStyle: {
-                bgColor: bgColor || "#3498db",
-                hoverBgColor: hoverBgColor || "#2ecc71",
-                textColor: textColor || "#ffffff",
-                borderRadius: borderRadius || 25,
-                width: buttonWidth || 150,
-                height: buttonHeight || 40
-            }
         })
             .then(() => {
                 alert("Imagem de fundo, segunda imagem e estilo dos botões salvos com sucesso!");
@@ -2314,18 +2284,6 @@
                 document.getElementById("background-color1").value = data.color1 || "#ffffff";
                 document.getElementById("background-color2").value = data.color2 || "#ffffff";
 
-
-                // Atualizar os controles de estilo dos botões
-                if (data.buttonStyle) {
-                    document.getElementById("button-bg-color").value = data.buttonStyle.bgColor || "#3498db";
-                    document.getElementById("button-hover-bg-color").value = data.buttonStyle.hoverBgColor || "#2ecc71";
-                    document.getElementById("button-text-color").value = data.buttonStyle.textColor || "#ffffff";
-                    document.getElementById("button-border-radius").value = data.buttonStyle.borderRadius || 25;
-                    document.getElementById("button-width").value = data.buttonStyle.width || 150;
-                    document.getElementById("button-height").value = data.buttonStyle.height || 40;
-
-                    updateButtonPreview(); // Atualizar a pré-visualização dos botões
-                }
 
                 if (data.userNameStyle) {
                     document.getElementById("user-gradient-color1").value = data.userNameStyle.color1 || "#ffffff";
@@ -2434,15 +2392,6 @@
         const iconUrl = document.getElementById("icon-Url").value;
         const color1 = document.getElementById("background-color1").value;
         const color2 = document.getElementById("background-color2").value;
-        const buttonStyle = {
-            bgColor: document.getElementById("button-bg-color").value,
-            hoverBgColor: document.getElementById("button-hover-bg-color").value,
-            textColor: document.getElementById("button-text-color").value,
-            borderRadius: parseInt(document.getElementById("button-border-radius").value),
-            width: parseInt(document.getElementById("button-width").value),
-            height: parseInt(document.getElementById("button-height").value)
-        };
-
         const editlayoutImg = document.getElementById("editlayout-child");
         const editiconImg = document.getElementById("editicon-child");
 
@@ -2451,7 +2400,6 @@
             iconUrl: iconUrl || "x",
             color1,
             color2,
-            buttonStyle,
             editlayout: {
                 top: editlayoutImg.style.top || "0px",
                 left: editlayoutImg.style.left || "0px",
@@ -2493,45 +2441,6 @@
             console.error("Erro ao salvar:", error);
         });
     }
-
-
-    function updateButtonPreview() {
-        const bgColor = document.getElementById("button-bg-color").value;
-        const hoverBgColor = document.getElementById("button-hover-bg-color").value;
-        const textColor = document.getElementById("button-text-color").value;
-        const borderRadius = document.getElementById("button-border-radius").value;
-        const buttonWidth = document.getElementById("button-width").value;
-        const buttonHeight = document.getElementById("button-height").value;
-
-        // Atualizar os botões na interface
-        const buttons = document.querySelectorAll("#add-card-filmes, #add-card-jogos, #add-card-livros, #add-card-animes, #add-card-kids, #add-card-series");
-        buttons.forEach(button => {
-            button.style.backgroundColor = bgColor;
-            button.style.color = textColor;
-            button.style.borderRadius = `${borderRadius}px`;
-            button.style.width = `${buttonWidth}px`;
-            button.style.height = `${buttonHeight}px`;
-        });
-
-        // Atualizar o hover dinamicamente
-        const style = document.getElementById("dynamic-button-style");
-        if (style) style.remove(); // Remover estilo antigo
-
-        const hoverStyle = document.createElement("style");
-        hoverStyle.id = "dynamic-button-style";
-        hoverStyle.innerHTML = `
-        #add-card-filmes:hover, #add-card-jogos:hover, #add-card-livros:hover, #add-card-animes:hover, #add-card-kids:houver, #add-card-series:hover {
-            background-color: ${hoverBgColor};
-        }
-    `;
-        document.head.appendChild(hoverStyle);
-
-        // Atualizar os valores exibidos
-        document.getElementById("button-border-radius-value").textContent = `${borderRadius}px`;
-        document.getElementById("button-width-value").textContent = `${buttonWidth}px`;
-        document.getElementById("button-height-value").textContent = `${buttonHeight}px`;
-    }
-
 
     function removeImage() {
         // Define "x" no campo de URL da imagem de fundo
@@ -2772,37 +2681,37 @@
 
 
 
-                    console.log("👉 Adicionando usuário à lista:", user); // debug
+                console.log("👉 Adicionando usuário à lista:", user); // debug
 
-                    // Recuperar as cores e imagem do usuário
-                    const color1 = users[user]?.background?.userNameStyle?.color1 || "#ffffff";
-                    const color2 = users[user]?.background?.userNameStyle?.color2 || "#ffffff";
-                    const imgSrc = users[user]?.background?.userIcon?.url || "";
+                // Recuperar as cores e imagem do usuário
+                const color1 = users[user]?.background?.userNameStyle?.color1 || "#ffffff";
+                const color2 = users[user]?.background?.userNameStyle?.color2 || "#ffffff";
+                const imgSrc = users[user]?.background?.userIcon?.url || "";
 
-                    // Criar o item da lista (li)
-                    const li = document.createElement("li");
-                    li.textContent = `${user}`;  // Nome do usuário
+                // Criar o item da lista (li)
+                const li = document.createElement("li");
+                li.textContent = `${user}`;  // Nome do usuário
 
-                    // Definir variáveis CSS para gradiente
-                    li.style.setProperty('--color1', color1);
-                    li.style.setProperty('--color2', color2);
+                // Definir variáveis CSS para gradiente
+                li.style.setProperty('--color1', color1);
+                li.style.setProperty('--color2', color2);
 
-                    // Criar a imagem
-                    const img = document.createElement("img");
-                    img.src = imgSrc;
-                    img.className = "user-icon-friends"; // Usa a classe já feita
+                // Criar a imagem
+                const img = document.createElement("img");
+                img.src = imgSrc;
+                img.className = "user-icon-friends"; // Usa a classe já feita
 
-                    // Criar o span para o item da lista
-                    const span = document.createElement("span");
-                    span.className = "user-list-item";  // Usa a classe para aplicar o estilo de layout
-                    span.appendChild(li);
-                    span.appendChild(img);  // Imagem na direita
+                // Criar o span para o item da lista
+                const span = document.createElement("span");
+                span.className = "user-list-item";  // Usa a classe para aplicar o estilo de layout
+                span.appendChild(li);
+                span.appendChild(img);  // Imagem na direita
 
-                    // Configurar o clique para mostrar o perfil do usuário
-                    span.onclick = () => showOtherUserProfile(user);
+                // Configurar o clique para mostrar o perfil do usuário
+                span.onclick = () => showOtherUserProfile(user);
 
-                    // Adicionar o item à lista
-                    list.appendChild(span);
+                // Adicionar o item à lista
+                list.appendChild(span);
             }
         });
     }
@@ -2850,85 +2759,70 @@
                 }
             });
         });
-
-        sections.forEach(s => {
-            const btn = document.getElementById(`add-card-${s}`);
-            if (btn) btn.classList.add("hidden");
-        });
     }
 
     function loadBackgrounduser(usuarioprocurado) {
-  const ref = database.ref(`usuarios/${usuarioprocurado}/background`);
-  console.log("Carregando dados de outro usuário:", usuarioprocurado);
+        const ref = database.ref(`usuarios/${usuarioprocurado}/background`);
+        console.log("Carregando dados de outro usuário:", usuarioprocurado);
 
-  ref.once("value", (snapshot) => {
-    const data = snapshot.val();
-    const gridContainer = document.getElementsByClassName("grid-container")[0];
-    let backgroundStyle = "";
+        ref.once("value", (snapshot) => {
+            const data = snapshot.val();
+            const gridContainer = document.getElementsByClassName("grid-container")[0];
+            let backgroundStyle = "";
 
-    // BACKGROUND IMAGE
-    const backgroundUrl = (data?.url && data.url !== "x") ? data.url : "x";
-    document.getElementById("background-url").value = backgroundUrl;
-    document.getElementById("editlayout-child").src = backgroundUrl;
+            // BACKGROUND IMAGE
+            const backgroundUrl = (data?.url && data.url !== "x") ? data.url : "x";
+            document.getElementById("background-url").value = backgroundUrl;
+            document.getElementById("editlayout-child").src = backgroundUrl;
 
-    const content = document.getElementById("gridContainer").getElementsByClassName("content")[0];
-    if (content) content.src = backgroundUrl;
+            const content = document.getElementById("gridContainer").getElementsByClassName("content")[0];
+            if (content) content.src = backgroundUrl;
 
-    // ICON IMAGE
-    const iconUrl = (data?.iconUrl && data.iconUrl !== "x") ? data.iconUrl : "";
-    document.getElementById("icon-Url").value = iconUrl;
-    document.getElementById("user-icon").src = iconUrl;
-    document.getElementById("editicon-child").src = iconUrl;
+            // ICON IMAGE
+            const iconUrl = (data?.iconUrl && data.iconUrl !== "x") ? data.iconUrl : "";
+            document.getElementById("icon-Url").value = iconUrl;
+            document.getElementById("user-icon").src = iconUrl;
+            document.getElementById("editicon-child").src = iconUrl;
 
-    // EDITLAYOUT
-    const layoutImg = document.getElementById("editlayout-child");
-    layoutImg.style.top = data?.editlayout?.top || "0px";
-    layoutImg.style.left = data?.editlayout?.left || "0px";
-    layoutImg.style.transform = data?.editlayout?.zoom || "scale(1)";
+            // EDITLAYOUT
+            const layoutImg = document.getElementById("editlayout-child");
+            layoutImg.style.top = data?.editlayout?.top || "0px";
+            layoutImg.style.left = data?.editlayout?.left || "0px";
+            layoutImg.style.transform = data?.editlayout?.zoom || "scale(1)";
 
-    // BACKGROUND COLORS
-    const color1 = data?.color1 || "#ffffff";
-    const color2 = data?.color2 || "#ffffff";
+            // BACKGROUND COLORS
+            const color1 = data?.color1 || "#ffffff";
+            const color2 = data?.color2 || "#ffffff";
 
-    backgroundStyle = (color1 !== color2)
-      ? `linear-gradient(135deg, ${color1}, ${color2})`
-      : color1;
+            backgroundStyle = (color1 !== color2)
+                ? `linear-gradient(135deg, ${color1}, ${color2})`
+                : color1;
 
-    gridContainer.style.background = backgroundStyle;
-    document.getElementById("background-color1").value = color1;
-    document.getElementById("background-color2").value = color2;
+            gridContainer.style.background = backgroundStyle;
+            document.getElementById("background-color1").value = color1;
+            document.getElementById("background-color2").value = color2;
 
-    // BUTTON STYLE
-    const btnStyle = data?.buttonStyle || {};
-    document.getElementById("button-bg-color").value = btnStyle.bgColor || "#3498db";
-    document.getElementById("button-hover-bg-color").value = btnStyle.hoverBgColor || "#2ecc71";
-    document.getElementById("button-text-color").value = btnStyle.textColor || "#ffffff";
-    document.getElementById("button-border-radius").value = btnStyle.borderRadius || 25;
-    document.getElementById("button-width").value = btnStyle.width || 150;
-    document.getElementById("button-height").value = btnStyle.height || 40;
-    updateButtonPreview();
+            // USERNAME STYLE
+            const userStyle = data?.userNameStyle || {};
+            document.getElementById("user-gradient-color1").value = userStyle.color1 || "#ffffff";
+            document.getElementById("user-gradient-color2").value = userStyle.color2 || "#ffffff";
+            document.getElementById("user-border-color").value = userStyle.border || "#000000";
+            applyUserDisplayStyle();
 
-    // USERNAME STYLE
-    const userStyle = data?.userNameStyle || {};
-    document.getElementById("user-gradient-color1").value = userStyle.color1 || "#ffffff";
-    document.getElementById("user-gradient-color2").value = userStyle.color2 || "#ffffff";
-    document.getElementById("user-border-color").value = userStyle.border || "#000000";
-    applyUserDisplayStyle();
+            // BACKGROUND IMAGE POSITIONING
+            const bgImg = document.getElementById("background-image");
+            const bgData = data?.backgroundImg;
+            bgImg.src = bgData?.url || "";
+            bgImg.style.left = bgData?.left || "0px";
+            bgImg.style.top = bgData?.top || "0px";
+            bgImg.style.transform = bgData?.zoom || "scale(1)";
 
-    // BACKGROUND IMAGE POSITIONING
-    const bgImg = document.getElementById("background-image");
-    const bgData = data?.backgroundImg;
-    bgImg.src = bgData?.url || "";
-    bgImg.style.left = bgData?.left || "0px";
-    bgImg.style.top = bgData?.top || "0px";
-    bgImg.style.transform = bgData?.zoom || "scale(1)";
-
-    // Apply layout cropping
-    applyLayoutCrop(data || {});
-  }).catch((error) => {
-    console.error("Erro ao carregar os dados:", error);
-  });
-}
+            // Apply layout cropping
+            applyLayoutCrop(data || {});
+        }).catch((error) => {
+            console.error("Erro ao carregar os dados:", error);
+        });
+    }
 
 
 
@@ -3056,39 +2950,39 @@
     }
 
     function sendMessage() {
-  if (!currentUser) return;
+        if (!currentUser) return;
 
-  const input = document.getElementById("chat-input");
-  const text = input.value.trim();
-  if (!text) return;
+        const input = document.getElementById("chat-input");
+        const text = input.value.trim();
+        if (!text) return;
 
-  const user = currentUser;
-  const display = document.getElementById("user-display");
-  const color1 = document.getElementById("user-gradient-color1").value;
-  const color2 = document.getElementById("user-gradient-color2").value;
+        const user = currentUser;
+        const display = document.getElementById("user-display");
+        const color1 = document.getElementById("user-gradient-color1").value;
+        const color2 = document.getElementById("user-gradient-color2").value;
 
-  const now = new Date();
-const pad = (n) => n.toString().padStart(2, "0");
-const padMs = (n) => n.toString().padStart(3, "0");
+        const now = new Date();
+        const pad = (n) => n.toString().padStart(2, "0");
+        const padMs = (n) => n.toString().padStart(3, "0");
 
-const formattedDate =
-  `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ` +
-  `${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}-${padMs(now.getMilliseconds())}`;
+        const formattedDate =
+            `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ` +
+            `${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}-${padMs(now.getMilliseconds())}`;
 
-  const formattedDateMsg = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+        const formattedDateMsg = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
 
-  const message = {
-    user: user,
-    text: text,
-    style: `linear-gradient(135deg, ${color1}, ${color2})`,
-    timestamp: formattedDateMsg
-  };
+        const message = {
+            user: user,
+            text: text,
+            style: `linear-gradient(135deg, ${color1}, ${color2})`,
+            timestamp: formattedDateMsg
+        };
 
-  const safeKey = Date.now().toString();
-  firebase.database().ref("messages/" + formattedDate).set(message);
+        const safeKey = Date.now().toString();
+        firebase.database().ref("messages/" + formattedDate).set(message);
 
-  input.value = "";
-}
+        input.value = "";
+    }
 
 
 
@@ -3097,29 +2991,122 @@ const formattedDate =
     });
 
     function cleanOldMessages() {
-  const now = new Date();
-  now.setDate(now.getDate() - 30); // Subtrai 1 dia
+        const now = new Date();
+        now.setDate(now.getDate() - 30); // Subtrai 1 dia
 
-  firebase.database().ref("messages").once("value", function (snapshot) {
-    snapshot.forEach(function (childSnapshot) {
-      const key = childSnapshot.key;
+        firebase.database().ref("messages").once("value", function (snapshot) {
+            snapshot.forEach(function (childSnapshot) {
+                const key = childSnapshot.key;
 
-      // Extrai a data e hora da chave
-      const [datePart, timePart] = key.split(" ");
-      if (!datePart || !timePart) return;
+                // Extrai a data e hora da chave
+                const [datePart, timePart] = key.split(" ");
+                if (!datePart || !timePart) return;
 
-      // Converte para formato ISO: "2025-04-30T16:30:39.122Z"
-      const isoString = datePart + "T" + timePart.replace(/-/g, ":").replace(/:(\d{3})$/, ".$1") + "Z";
-      const messageDate = new Date(isoString);
+                // Converte para formato ISO: "2025-04-30T16:30:39.122Z"
+                const isoString = datePart + "T" + timePart.replace(/-/g, ":").replace(/:(\d{3})$/, ".$1") + "Z";
+                const messageDate = new Date(isoString);
 
-      // Compara com 24h atrás
-      if (messageDate < now) {
-        console.log("Removendo:", key);
-        firebase.database().ref("messages/" + key).remove();
-      }
+                // Compara com 24h atrás
+                if (messageDate < now) {
+                    console.log("Removendo:", key);
+                    firebase.database().ref("messages/" + key).remove();
+                }
+            });
+        });
+    }
+
+    function toggleSubmenu(event) {
+        // Evitar propagação do evento para o elemento pai
+        if (event) {
+            event.stopPropagation();
+        }
+
+        // Encontrar o submenu associado ao botão
+        const submenu = event.target.nextElementSibling;
+
+        if (submenu && submenu.classList.contains("submenu-options")) {
+            // Ajustar a posição do submenu para aparecer à direita do botão
+            const rect = event.target.getBoundingClientRect(); // Posição do botão
+            submenu.style.position = "absolute";
+            submenu.style.left = `${rect.right + 10}px`; // Posição à direita do botão
+            submenu.style.top = `${rect.top}px`; // Mesma altura do botão
+            submenu.classList.toggle("hidden"); // Alternar visibilidade
+        }
+    }
+
+    function toggletrofeu() {
+        const menu = document.getElementById("trofeu-submenu");
+        if (menu.style.display === "block") {
+            menu.style.display = "none";
+        } else {
+            menu.style.display = "block";
+            const submenu = document.querySelector('.submenu-trofeu');
+            submenu.classList.toggle('hidden');
+        }
+    }
+
+    function mostrarTrofeuSubmenu() {
+        const botao = document.getElementById("atribuir-trofeu-btn");
+        const submenu = document.getElementById("trofeu-submenu");
+
+        // Corrige a distância — 6px de margem visual
+        // Temporariamente exibe para calcular dimensões
+        submenu.style.display = "flex";
+        submenu.style.position = "absolute";
+        submenu.style.visibility = "hidden"; // esconde visualmente, mas permite medir
+
+        // Aguarda renderização para obter tamanho real
+        requestAnimationFrame(() => {
+            const width = submenu.offsetWidth;
+            const height = submenu.offsetHeight;
+
+            const centerX = (window.innerWidth - width) / 2;
+            const centerY = (window.innerHeight - height) / 2;
+
+            submenu.style.left = `${centerX}px`;
+            submenu.style.top = `${centerY}px`;
+            submenu.style.visibility = "visible"; // agora exibe normalmente
+        });
+    }
+
+
+
+
+    document.addEventListener('click', function (event) {
+        const submenu = document.getElementById('trofeu-submenu');
+        const context = document.getElementById('context-menu');
+        if (!submenu.contains(event.target) && !context.contains(event.target)) {
+            submenu.style.display = 'none';
+        }
     });
-  });
-}
+
+
+
+
+    function toggleDropdown(event) {
+        // Evitar propagação do evento para o elemento pai
+        if (event) {
+            event.stopPropagation();
+        }
+
+        // Alternar a visibilidade do dropdown
+        document.getElementById("dropdownMenu").classList.toggle("show");
+    }
+
+    // Fechar o dropdown se o usuário clicar fora dele
+    window.onclick = function (event) {
+        if (!event.target.matches('.dropbtn') && !event.target.matches('#user-display')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    };
+
+
 
 </script>
 
