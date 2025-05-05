@@ -1,0 +1,3279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>🚶Card-Flip</title>
+    <link rel="icon" href="caminho/para/sua/logo.ico" type="image/x-icon">
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+            /* 👈 força a remoção da barra de rolagem horizontal */
+            overflow-y: hidden;
+
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-areas:
+                "header header header"
+                "content content sidebar"
+                "footer footer footer";
+            grid-template-columns: 33% 33% 32%;
+            /* Agora são 3 colunas: content ocupa 2/3 e sidebar 1/3 */
+            grid-template-rows: 10% 80% 8%;
+            gap: 1%;
+            padding: 1%;
+            height: 100%;
+            width: 100%;
+            background-color: #ecf0f1;
+            box-sizing: border-box;
+            transition: all 1s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            background: #00223885;
+            grid-area: header;
+            padding: 0.3%;
+            overflow: hidden;
+            /* impede que o conteúdo interno ultrapasse */
+        }
+
+
+
+        .child-header,
+        .user-section1,
+        .user-section2,
+        .user-list-panel,
+        #chat-box,
+        .footer {
+            border: 1px solid var(--border-color);
+        }
+
+        .child-header {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            /* respeita o padding dentro do 100% */
+            background: #002238;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 0 1%;
+            font-size: 15%;
+            border-radius: 5px;
+            overflow: hidden;
+            /* evita que algo vaze */
+        }
+
+        .toggle-button {
+            background: linear-gradient(135deg, var(--gradient-color1), var(--gradient-color2));
+            color: var(--toggle-button-color);
+            border: none;
+            padding: 1% 2%;
+            border-radius: 15%;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: auto;
+
+        }
+
+        .toggle-button:hover {
+            background: linear-gradient(135deg, var(--gradient-color2), var(--gradient-color1));
+            color: white;
+        }
+
+        
+        .user-list-item:hover{
+            background: #009dff;
+        }
+
+
+        .content {
+            grid-area: content;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 1.5s ease;
+            overflow: hidden;
+            /* Impede o #background-image de ultrapassar a borda */
+            position: relative;
+            border-radius: 5px;
+
+        }
+
+        .sidebar {
+            grid-area: sidebar;
+            background: #00223885;
+            padding: 1%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2%;
+            transition: transform 1.5s ease, opacity 1.5s ease;
+            overflow-y: auto;
+            /* ⬅️ rolagem vertical automática */
+            overflow-x: hidden;
+            /* ⬅️ evita overflow lateral */
+            border-radius: 5px;
+        }
+
+        .footer {
+            grid-area: footer;
+            background: #002238;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-sizing: border-box;
+            /* opcional para espaçamento */
+            border-radius: 5px;
+
+        }
+
+
+        .trofeus-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5%;
+            flex-wrap: nowrap;
+            overflow: hidden;
+    justify-content: center; /* Centraliza no eixo vertical (se coluna) */
+        }
+
+        .trofeus-container img {
+
+            /* 🔑 limita altura visível */
+            object-fit: contain;
+
+        }
+
+        .cont-trofeu {
+            font-weight: bold;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+
+        /* Sidebar escondida */
+        .sidebar-hidden .sidebar {
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar-hidden {
+            grid-template-columns: 1fr 1fr 0;
+        }
+
+
+        .navigation {
+            display: flex;
+            /* Espaço entre os links */
+            gap: 5%;
+            width: 100%;
+            align-items: left;
+            justify-content: center;
+            flex-wrap: wrap;
+            /* quebra linha se necessário */
+            flex: 1 1 45%;
+        }
+
+        .navigation a {
+            color: white;
+            text-decoration: none;
+            font-size: clamp(16px, 2.5vw, 24px);
+            font-weight: bold;
+        }
+
+        .navigation a:hover {
+            color: #0ff;
+            /* Cor neon ao passar o mouse */
+        }
+
+
+        /* ################## parte de LOGIN E REGISTRO ########################## */
+
+        #login-container,
+        #register-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        #login-container.active,
+        #register-container.active {
+            display: flex;
+        }
+
+
+        #login-container input,
+        #register-container input {
+            margin: 2%;
+            padding: 2%;
+            width: 70%;
+            border: 0.1vw solid #ccc;
+            border-radius: 1.5vw;
+            font-size: 100%;
+            box-sizing: border-box;
+        }
+
+        #login-container button,
+        #register-container button {
+            padding: 2%;
+            background-color: #3498db;
+            color: white;
+            width: 70%;
+            border: none;
+            border-radius: 1.5vw;
+            cursor: pointer;
+            font-size: 100%;
+            font-weight: bold;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            box-shadow: 0 4vw 5vw rgba(0, 0, 0, 0.2);
+        }
+
+        #login-container button:hover,
+        #register-container button:hover {
+            background-color: #2980b9;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #login-container.hidden,
+        #register-container.hidden {
+            display: none;
+        }
+
+
+        /* Estilo para o container de login */
+        #login-container,
+        #register-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            background-size: cover;
+            overflow: hidden;
+            /* Garante que nada ultrapasse os limites */
+        }
+
+        #login-container {
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+        }
+
+        #register-container {
+            background: linear-gradient(135deg, #ae04f7, #260533);
+            /* Gradiente roxo */
+        }
+
+        /* Caixa de login */
+        .white-box {
+            background-color: white;
+            padding: 2%;
+            border-radius: 15%;
+            box-shadow: 0 40% 50% rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 20%, 80%;
+            height: 30%, 50%;
+            /* max-width: 400px; */
+        }
+
+        /* Título */
+        .white-box h2 {
+            margin-bottom: 2%;
+            color: #333;
+        }
+
+        #login-container .white-box button {
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+        }
+
+        #login-container .white-box button:hover {
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+        }
+
+        #register-container .white-box button {
+            background: linear-gradient(135deg, #ae04f7, #260533);
+        }
+
+        #register-container .white-box button:hover {
+            background: linear-gradient(135deg, #260533, #ae04f7);
+        }
+
+        .white-box button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 40% 50% rgba(0, 0, 0, 0.2);
+        }
+
+        .white-box button:focus {
+            outline: none;
+            box-shadow: 0 0 80% rgba(50, 152, 219, 0.8);
+        }
+
+        /* Link para registro */
+        .white-box p {
+            color: #666;
+        }
+
+        .white-box a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .white-box p a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* ################ FIM LOGIN E REGISTRO #######################*/
+        /* ################ CARD ######################### */
+        .card-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            /* Centraliza os cards */
+            box-sizing: border-box;
+            gap: 16px;
+            /* Espaçamento entre os cards */
+        }
+
+        .card-row::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari e Opera */
+        }
+
+        .card {
+            height: auto;
+            box-sizing: border-box;
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            /* Mantém proporção consistente */
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            box-sizing: border-box;
+        }
+
+        .card .front img {
+            width: 100%;
+            /* A imagem ocupa toda a largura do cartão */
+            height: 100%;
+            /* A imagem ocupa toda a altura do cartão */
+            object-fit: cover;
+            /* Faz a imagem preencher os 4 cantos da carta */
+            object-position: center;
+            /* Centraliza a imagem dentro do espaço */
+
+            /* Mantém as bordas arredondadas, se necessário */
+        }
+
+        .card-container {
+            flex: 1 1 250px;
+            /* Card ocupa no mínimo 250px e pode crescer */
+            max-width: 300px;
+            perspective: 1000px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .card {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            /* Mantém proporção consistente */
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1.0s;
+            box-sizing: border-box;
+        }
+
+        .card .front,
+        .card .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border: 2px solid #000;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .card .back {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            transform: rotateY(180deg);
+        }
+
+        .card .back .card-name {
+            font-size: clamp(16px, 2.5vw, 24px);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .card .back .card-text {
+            font-size: 10px;
+            margin-top: 20px;
+        }
+
+        .flipped .card {
+            transform: rotateY(180deg);
+        }
+
+
+        /* ################ FIM CARD ################### */
+
+        .welcome-message {
+            animation: fadeIn 1.5s ease;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            padding: 30px;
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%) transparent;
+            color: #fff;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            z-index: 9999;
+        }
+
+        .welcome-message h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .welcome-message p {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #welcome-message button:hover {
+            background-color: #ff0000;
+        }
+
+        #close-welcome {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            background: transparent;
+            border: 4px solid #0fe;
+            border-radius: 15px;
+            font-size: 18px;
+            padding: 8px 16px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        /* ##########3 USER LIST ########### */
+
+        .user-sections-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* Duas colunas de igual largura */
+            grid-template-rows: 1fr 1fr 1fr;
+            /* Três linhas de igual altura */
+            gap: 8px;
+            /* Espaçamento entre os itens */
+            justify-items: center;
+            /* Centraliza os itens nas células */
+            width: 100%;
+            position: relative;
+        }
+
+        .user-section1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #002238;
+            border-radius: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+            grid-column: 1;
+            /* Fica na primeira coluna */
+            grid-row: span 2;
+            /* Ocupa duas linhas */
+            min-height: 60px;
+        }
+
+        .user-section2:hover, .user-section1:hover{
+            background: #009dff;
+        }
+        
+
+        .user-section2 {
+            width: 100%;
+            /* Ocupa toda a largura da célula */
+            height: 100%;
+            /* Ocupa toda a altura da célula */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #002238;
+            border-radius: 5px;
+            padding: 10px;
+            gap: 1%;
+            box-sizing: border-box;
+            grid-column: 1;
+            /* Primeira coluna */
+            grid-row: 3;
+            /* Fica na primeira coluna e ocupa duas linhas */
+        }
+
+
+        .user-list-panel {
+            width: 100%;
+            height: 100%;
+            /* Ocupa toda a altura da célula */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background: #002238;
+            border-radius: 5px;
+            grid-column: 2;
+            /* Fica na segunda coluna */
+            grid-row: span 3;
+            /* Ocupa 3 linhas */
+            box-sizing: border-box;
+        }
+
+        .user-icon {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            flex-shrink: 0;
+            border-radius: 50%;
+        }
+
+        #user-display {
+            color: white;
+            font-size: clamp(60px, 2.5vw, 24px);
+            cursor: pointer;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            width: auto;
+            max-width: auto;
+
+        }
+
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            flex-shrink: 1;
+            /* permite encolher se necessário */
+            min-width: 0;
+            /* necessário para text-overflow funcionar */
+        }
+
+
+        .dropdown {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            /* Alinha o conteúdo à esquerda */
+            width: auto;
+            height: auto;
+        }
+
+        .dropbtn {
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 26px;
+            border: none;
+            cursor: pointer;
+            background: none;
+            padding: 0;
+            gap: 10px;
+            /* Espaço entre a imagem e o texto */
+        }
+
+        .dropdown {
+            margin: auto;
+            align-content: center;
+            align-items: center;
+            align-self: center !important;
+        }
+
+        /* Estilo para a lista de usuários */
+        #user-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1%;
+            margin-top: 4%;
+            padding: 1%;
+            width: 100%;
+            max-height: 30vh;
+            box-sizing: border-box;
+            overflow-y: auto;
+            /* ⬅️ Ativa rolagem vertical */
+            overflow-x: hidden;
+            /* ⬅️ Oculta horizontal */
+
+            /* Esconde a barra visualmente */
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE e Edge */
+        }
+
+        #user-list::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, Edge (novos) */
+        }
+
+
+        /* Estilo para o item da lista de usuários */
+        .user-list-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            /* menor espaço entre texto e ícone */
+            padding: 0.3rem 0.6rem;
+            /* menos espaço interno */
+            margin: 2px;
+            border: 1px solid #009dff;
+            border-radius: 6px;
+            box-sizing: border-box;
+            width: 100%;
+            height: 3rem;
+            /* altura reduzida */
+            overflow: hidden;
+            justify-content: space-between;
+        }
+
+        .user-icon-friends {
+            height: 100%;
+            /* altura da imagem se ajusta ao container */
+            aspect-ratio: 1 / 1;
+            /* garante que continue circular */
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            max-height: 100%;
+        }
+
+        /* Estilo de hover para os itens da lista */
+        #user-list-item :hover {
+            background-color: #3498db;
+        }
+
+
+        .username-item {
+            background: linear-gradient(135deg, var(--color1), var(--color2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            padding: 1%;
+            font-size: 2vw;
+            /* Reduz o tamanho da fonte para não ficar muito grande */
+            white-space: nowrap;
+            /* Impede a quebra do texto */
+            overflow: visible;
+            /* Permite que o texto ocupe mais espaço se necessário */
+            text-overflow: unset;
+            /* Remove as reticências, caso o texto seja muito longo */
+            justify-content: center;
+            width: auto;
+            /* O texto ocupará o espaço necessário */
+            display: inline-block;
+            /* Permite que o texto se ajuste ao seu tamanho */
+        }
+
+
+        #search-bar {
+            border: 1px solid rgba(15, 79, 119, 0.747);
+            background: rgba(9, 52, 78, 0.747);
+            border-radius: 5px;
+            color: white;
+            width: 100%;
+            /* 🔥 Faz ocupar toda a sidebar */
+            padding: 8px;
+            box-sizing: border-box;
+
+        }
+
+        #search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.288);
+            /* Rosa, por exemplo */
+        }
+
+        #search-bar:focus {
+            outline: none;
+            border: 1px solid #009dff;
+        }
+
+
+
+
+        /* ##########3 USER LIST ########### */
+
+
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            width: 50%;
+            background-color: #1f2a38;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            overflow: hidden;
+            border: 1px solid #2c3e50;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .dropdown-content button {
+            width: 100%;
+            background: transparent;
+            border: none;
+            text-align: center;
+            font-size: 24px;
+            color: #ecf0f1;
+            margin: 3%;
+
+            transition: background-color 0.2s ease;
+
+        }
+
+        .dropdown-content button:hover {
+            background-color: #34495e;
+        }
+
+        
+
+     
+
+        .show {
+            display: block;
+        }
+
+        #background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* faz a imagem cobrir toda a área sem distorcer */
+            z-index: 0;
+            /* garante que fique atrás do conteúdo */
+            pointer-events: none;
+            /* Impede qualquer clique, arrasto etc. */
+            user-select: none;
+            /* Impede seleção */
+            touch-action: none;
+            /* Impede gestos de toque */
+        }
+
+        #trofeu-submenu {
+            position: absolute;
+            background-color: #1f2a38;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            border: 1px solid #2c3e50;
+            padding: 4px 0;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        #trofeu-submenu button {
+            padding: 10px 16px;
+            background-color: transparent;
+            border: none;
+            color: #ecf0f1;
+            text-align: left;
+            font-size: 14px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            position: relative;
+        }
+
+        #trofeu-submenu button:hover {
+            background-color: #34495e;
+        }
+
+        #trofeu-submenu img {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+        }
+
+        .menu,
+        .submenu,
+        .subsubmenu {
+            display: none;
+            position: absolute;
+            background-color: #1f2a38;
+            border: 1px solid #2c3e50;
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1000;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .menu,
+        .submenu {
+            width: 20%;
+        }
+
+        .menu button,
+        .menu div,
+        .submenu button,
+        .submenu2 button {
+            width: 100%;
+            background-color: transparent;
+            color: #ecf0f1;
+            border: none;
+            padding: 3%;
+            text-align: left;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .menu button:hover,
+        .menu div:hover,
+        .submenu button:hover,
+        .submenu2 button:hover {
+            background-color: #34495e;
+            border-radius: 6px;
+        }
+
+        .removertrofeu {
+            background: linear-gradient(#c03a2b60);
+            /* vermelho vivo */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .removertrofeu:hover {
+            background: #c0392b,
+                /* inverte as cores no hover */
+        }
+
+        .content-container {
+            display: none;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            /* Inclui padding no cálculo da largura */
+        }
+
+        .active {
+            display: block;
+        }
+
+
+        /* #############3 EDIT LAYOUT ############## */
+        /* Estilo para o container */
+        #editlayout {
+            display: flex;
+    flex-direction: column;
+    justify-content: center; /* alinha verticalmente */
+    text-align: center;      /* centraliza texto e alguns elementos inline */
+            position: fixed;
+            /* Fixo na tela */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* Centraliza certinho */
+            width: 50%;
+            height: auto;
+            align-items: center;
+            max-height: 90%;
+            overflow-y: auto;
+            background: #002238;
+            /* Fundo branco com transparência */
+            z-index: 10000;
+            /* Fica acima de tudo */
+            /* Começa escondido */
+            padding: 1%;
+            box-sizing: border-box;
+            border-radius: 10px;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        #editlayout.active {
+            display: block;
+        }
+
+        #editlayout-image{
+        width: 100%;
+        height: 50%;
+    }
+
+
+        /* Estilo para os títulos */
+        #editlayout h2 {
+            font-size: 24px;
+            color: #3498db;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #editlayout h3 {
+            font-size: 20px;
+            color: #2ecc71;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        /* Estilo para os labels */
+        #editlayout label {
+            display: block;
+            font-size: 14px;
+            color: white;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        /* Estilo para os inputs de texto */
+        #editlayout input[type="text"] {
+
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo para os inputs de cor */
+        #editlayout input[type="color"] {
+            background: #002238;
+            border: 0px solid #ccc;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        /* Estilo para os inputs de range */
+        #editlayout input[type="range"] {
+
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        /* Estilo para os botões */
+        #editlayout button {
+
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #editlayout button:hover {
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+            transform: scale(1.05);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #editlayout button:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(50, 152, 219, 0.8);
+        }
+
+        /* Estilo para os spans */
+        #editlayout span {
+            font-size: 14px;
+            color: #555;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        #editicon{
+        width: 10vw;
+        height: 10vw;
+        border: 1px solid white;
+    }
+    .editicon-image{
+        display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #002238;
+            border-radius: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+            min-height: 60px;
+    }
+
+    #editicon-child{
+        width: 100%;
+        height: 100%;
+    }
+
+    #editlayout input[type="text"],
+#editlayout input[type="range"],
+#editlayout button,
+#editlayout h2,
+#editlayout h3 {
+    width: 90%;
+    margin: 10px auto;
+    text-align: center;
+}
+#editlayout input[type="color"] {
+    text-align: center;
+    border: 1%;
+}
+
+        /* #############3 EDIT LAYOUT ############## */
+
+
+
+        /* ################################ CHAT BOX ################### */
+        #chat-box {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background: #002238;
+            color: rgb(255, 255, 255);
+            border-radius: 10px;
+            padding: 2%;
+            box-sizing: border-box;
+            overflow: hidden;
+            margin-top: auto;
+        }
+
+        #chat-messages {
+            display: flex;
+            flex-direction: column;
+            word-break: break-word;
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 2%;
+            font-size: clamp(16px, 2.5vw, 80%);
+            /* Esconde a barra no Chrome, Edge, Safari */
+            scrollbar-width: none;
+            overflow-x: hidden;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* Internet Explorer e Edge antigo */
+        }
+
+        .username-chat {
+            white-space: nowrap;
+            /* Impede quebra de linha */
+            background: linear-gradient(135deg, #3d2a00, #8fecff);
+            -webkit-background-clip: text;
+            color: transparent;
+            font-weight: bold;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85em;
+        }
+
+        .message-body {
+            font-size: 1em;
+            margin-top: 4px;
+        }
+
+        #chat-input {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+
+        .timestamp {
+            color: #ffffff44;
+            font-size: 0.8em;
+            white-space: nowrap;
+            margin-left: 8px;
+        }
+
+        /* ############################### FIM CHAT BOX ########################*/
+
+        #card-input-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        #card-input-modal .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 320px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        #card-input-modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        #card-input-modal .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #card-input-modal .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #editlayout-child {
+    width: auto;
+    height: 100%;
+}
+
+    </style>
+
+    <style>
+        @media (max-width: 980px) {
+            .user-sections-wrapper {
+                grid-template-columns: 1fr;
+                /* Apenas uma coluna */
+                grid-template-rows: auto auto auto;
+                /* Apenas duas linhas */
+            }
+
+            .user-section1 {
+                grid-column: 1;
+                /* Fica na primeira coluna */
+                grid-row: 1;
+                /* Fica na primeira linha */
+            }
+
+            .user-section2 {
+                grid-column: 1;
+                /* Fica na primeira coluna */
+                grid-row: 2;
+                /* Fica na primeira linha */
+            }
+
+            .user-list-panel {
+                grid-column: 1;
+                grid-row: 3;
+                display: grid;
+            }
+
+
+            #login-container input,
+            #register-container input,
+            #login-container button,
+            #register-container button {
+                width: 90%;
+                font-size: 110%;
+                padding: 4%;
+                border-radius: 4vw;
+            }
+
+            .white-box {
+                width: 90%;
+                height: auto;
+                padding: 5%;
+                border-radius: 5vw;
+            }
+
+            .white-box h2 {
+                font-size: 150%;
+            }
+
+            .white-box p,
+            .white-box a {
+                font-size: 110%;
+            }
+
+            #trofeu-submenu,
+    .menu,
+    .submenu,
+    .subsubmenu {
+        width: 50%;             /* ocupa quase toda a largura da tela */
+        font-size: 26px;        /* aumenta fonte */
+    }
+
+    #trofeu-submenu button,
+    .menu button,
+    .submenu button,
+    .submenu2 button {
+
+        font-size: 26px;
+    }
+
+
+    #chat-box {
+        padding: 4%;
+        border-radius: 0;
+    }
+
+    #chat-messages {
+        font-size: 26px;
+    }
+
+    .message-header, .message-body {
+        font-size: 0.90em;
+    }
+
+    #chat-input {
+        padding: 12px;
+        font-size: 1em;
+    }
+
+    .toggle-button {
+        font-size: 2.2rem;
+
+
+        }
+
+        #editlayout {
+        width: 90%;
+
+        padding: 16px;
+        border-radius: 8px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    #editlayout h2 {
+        font-size: 20px;
+    }
+
+    #editlayout h3 {
+        font-size: 18px;
+    }
+
+    #editlayout input[type="text"],
+    #editlayout input[type="range"] {
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    #editlayout button {
+        font-size: 16px;
+        padding: 12px 20px;
+        width: 100%; /* botões mais fáceis de tocar */
+        margin: 10px 0;
+    }
+
+    #editlayout span {
+        font-size: 13px;
+    }
+
+
+
+    #editlayout-child{
+        min-width: 0;
+        width: 50%;
+        height: 50%;
+    }
+
+    #editicon{
+        max-width: 50%;
+        display: flex;
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+    }
+
+    .dropdown-content {
+    width: 100%;
+    font-size: 36px;
+    }
+
+    .dropdown-content button{
+        font-size: 36px;
+        margin: 3%;
+        
+    }
+
+    .cont-trofeu{
+        width: 10vw;
+        height: 10vw;
+    }
+
+    .cont-trofeu{
+        display: flex;
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+        font-size: 36px;
+    }
+    .footer{
+        display: flex;
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+    }
+
+
+    }
+    </style>
+</head>
+
+<body>
+
+    <!-- Formulário de Login -->
+    <div id="login-container" class="content-container active">
+        <div class="white-box">
+            <h2>Login</h2>
+            <input type="text" id="login-username" placeholder="Usuário">
+            <input type="password" id="login-password" placeholder="Senha">
+            <button onclick="login()">Entrar</button>
+            <p>Não tem uma conta? <a href="#" onclick="showRegister()">Registre-se</a></p>
+        </div>
+    </div>
+
+    <!-- Formulário de Registro -->
+    <div id="register-container" class="content-container hidden">
+        <div class="white-box">
+            <h2>Registrar</h2>
+            <input type="text" id="register-username" placeholder="Usuário">
+            <input type="password" id="register-password" placeholder="Senha">
+            <button onclick="register()">Registrar</button>
+            <p>Já tem uma conta? <a href="#" onclick="showLogin()">Faça login</a></p>
+        </div>
+    </div>
+
+    <div id="crop-modal"
+        style="display: none; position: fixed; top: 0px; left: 0px; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 20px; border-radius: 10px; position: relative;">
+            <h3>Editar imagem</h3>
+            <div style="width: 300px; height: 400px; overflow: hidden; position: relative;">
+                <img id="editable-img" src="https://upload.wikimedia.org/wikipedia/en/e/e2/NFS_High_Stakes_box.jpg"
+                    style="position: absolute; cursor: grab; width: auto; height: 100%; transform-origin: center center; transform: scale(1); left: 0px; top: 0px;">
+            </div>
+            <input id="zoom-range" type="range" min="0.3" max="2" step="0.01" value="1"
+                style="width: 100%; margin-top: 10px;">
+            <button onclick="applyCrop()">Aplicar</button>
+            <button onclick="closeModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <div class="welcome-message" id="welcome-message" style="display: none;">
+        <h1>Seja muito bem-vindo(a) ao Card Flip!</h1>
+        <p>
+            Estamos muito felizes em ter você aqui com a gente! 🎉<br>
+            O Card Flip é o seu espaço para registrar todas as suas aventuras 🎮📚🎥<br>
+            Descubra também o que seus amigos já curtiram e compartilhe suas próprias conquistas de entretenimento!<br>
+            Comece agora a construir sua coleção e explore novas histórias incríveis! 🚀✨
+        </p>
+        <button id="close-welcome" onclick="fecharboasvindas()">Fechar</button>
+    </div>
+
+    <div class="grid-container" id="gridContainer">
+        <div class="header">
+            <div class="child-header">
+                <nav id="navbar" class="navigation hidden">
+                    <a href="#" onclick="showSession('filmes')">Filmes</a>
+                    <a href="#" onclick="showSession('jogos')">Jogos</a>
+                    <a href="#" onclick="showSession('livros')">Livros</a>
+                    <a href="#" onclick="showSession('animes')">Animes</a>
+                    <a href="#" onclick="showSession('kids')">Kids</a>
+                    <a href="#" onclick="showSession('series')">Séries</a>
+                </nav>
+                <button class="toggle-button" onclick="toggleSidebar()">Amigos</button>
+            </div>
+        </div>
+        <div class="content">
+            <img id="background-image" src="">
+            <div id="filmes" class="content-container hidden">
+                <div class="card-row" id="card-row-filmes">
+                    <!-- Cartas de filmes vão aqui -->
+                </div>
+            </div>
+            <div id="jogos" class="content-container hidden">
+                <div class="card-row" id="card-row-jogos">
+                    <!-- Cartas de jogos vão aqui -->
+                </div>
+            </div>
+            <div id="livros" class="content-container hidden">
+                <div class="card-row" id="card-row-livros">
+                    <!-- Cartas de livros vão aqui -->
+                </div>
+            </div>
+            <div id="animes" class="content-container hidden">
+                <div class="card-row" id="card-row-animes">
+                    <!-- Cartas de animes/cartoons vão aqui -->
+                </div>
+            </div>
+            <div id="kids" class="content-container hidden">
+                <div class="card-row" id="card-row-kids">
+                    <!-- Cartas de kids vão aqui -->
+                </div>
+            </div>
+            <div id="series" class="content-container hidden">
+                <div class="card-row" id="card-row-series">
+                    <!-- Cartas de séries vão aqui -->
+                </div>
+            </div>
+
+            <div id="menu" class="menu">
+                <button class="BotaoDireitoMouse" id="add-card-btn" onclick="openCardInputModal()">Adicionar
+                    Carta</button>
+                <button class="BotaoDireitoMouse" onclick="editCard('name')">Editar Nome</button>
+                <button class="BotaoDireitoMouse" onclick="editCard('comment')">Editar Comentário</button>
+                <button class="BotaoDireitoMouse" onclick="editCard('image')">Editar Imagem</button>
+                <button class="BotaoDireitoMouse" onclick="editCardCrop()">Editar Crop</button>
+                <button class="BotaoDireitoMouse" onclick="deleteCard()">Excluir</button>
+                <button class="BotaoDireitoMouse" id="opcao1">Mover para Outra Sessão</button>
+                <button class="BotaoDireitoMouse hidden" id="opcao2">Atribuir Troféu</button>
+                <button class="copiarCard hidden" onclick="copyCardToMyProfile()">Copiar Card</button>
+            </div>
+            <div id="submenu" class="submenu">
+                <button onclick="moveCardTo('filmes')">Filmes</button>
+                <button onclick="moveCardTo('jogos')">Jogos</button>
+                <button onclick="moveCardTo('livros')">Livros</button>
+                <button onclick="moveCardTo('animes')">Animes/Cartoons</button>
+                <button onclick="moveCardTo('kids')">Kids</button>
+                <button onclick="moveCardTo('series')">Séries</button>
+            </div>
+            <div id="submenu2" class="submenu">
+                <button onclick="atribuirTrofeu('platina')" style="position: relative;">100%
+                    <img id="trofeu-img-ouro" alt="Platinado"
+                        style="width: 20px; height: 20px; position: absolute; right: 10%; top: 50%; transform: translateY(-50%);">
+                </button>
+                <button onclick="atribuirTrofeu('zerado')" style="position: relative;">Zerado
+                    <img id="trofeu-img-prata" alt="Zerado"
+                        style="width: 20px; height: 20px; position: absolute; right: 10%; top: 50%; transform: translateY(-50%);">
+                </button>
+                <button onclick="atribuirTrofeu('jogado')" style="position: relative;">Jogado
+                    <img id="trofeu-img-bronze" alt="Jogado"
+                        style="width: 20px; height: 20px; position: absolute; right: 10%; top: 50%; transform: translateY(-50%);">
+                </button>
+                <button class="removertrofeu" onclick="removerTrofeu()">Remover Troféu</button>
+            </div>
+        </div>
+        <div class="sidebar">
+            <!-- Seção do usuário -->
+            <div class="user-sections-wrapper">
+                <div class="user-section1" onclick="toggleDropdown(event)">
+                    <img id="user-icon" src="..." alt="Usuário" class="user-icon">
+                    <div id="dropdownMenu" class="dropdown-content" style="display: none">
+                        <button onclick="event.stopPropagation(); showSession('editlayout')">📝 Editar Layout</button>
+                        <button onclick="event.stopPropagation(); confirmDeleteAccount()">🗑️Excluir Conta</button>
+                        <button onclick="event.stopPropagation(); logout()">🚶Logout</button>
+                    </div>
+                </div>
+                <div class="user-section2">
+                    <span id="user-display">Nome do Usuário</span>
+                </div>
+                <div class="user-list-panel">
+                    <input type="text" id="search-bar" placeholder="Pesquisar usuários...">
+                    <ul id="user-list"></ul>
+                </div>
+            </div>
+
+
+            <!-- Caixa de mensagens -->
+            <div id="chat-box">
+                <div id="chat-messages"></div>
+                <input type="text" id="chat-input" placeholder="Digite sua mensagem..."
+                    onkeydown="if(event.key==='Enter') sendMessage()">
+
+            </div>
+        </div>
+
+
+        <div class="footer">
+
+            <div class="trofeus-container">
+                <label id="trofeus-ouro" class="cont-trofeu hidden" style="color: gold;">0</label>
+                <img id="trofeus-ouro-img" class="cont-trofeu hidden" alt="Troféu Ouro">
+
+                <label id="trofeus-prata" class="cont-trofeu hidden" style="color: silver;">0</label>
+                <img id="trofeus-prata-img" class="cont-trofeu hidden" alt="Troféu Prata">
+
+                <label id="trofeus-bronze" class="cont-trofeu hidden" style="color: burlywood;">0</label>
+                <img id="trofeus-bronze-img" class="cont-trofeu hidden" alt="Troféu Bronze">
+            </div>
+        </div>
+
+    </div>
+
+    <div id="editlayout" class="content-container hidden">
+        <h2>Editar Layout</h2>
+        <label for="background-url">URL da Imagem de Fundo:</label>
+        <input type="text" id="background-url" placeholder="Digite a URL da imagem">
+        <div id="editlayout-image"
+            style="position: relative; width: 100%; height: 263px; overflow: hidden; border: 1px solid #ccc;">
+            <!-- Imagem de fundo será aplicada via CSS -->
+            <img id="editlayout-child" src=""
+                style="position: absolute; cursor: grab; width: auto; height: 100%; transform-origin: center center; transform: scale(1); left: 0px; top: 0px;">
+        </div>
+        <label>Zoom da Imagem de Fundo:</label>
+        <input id="editlayout-zoom" type="range" min="0.3" max="2" step="0.001" value="1">
+
+        <label for="icon-url">URL do Icone:</label>
+        <input type="text" id="icon-Url" placeholder="Digite a URL da imagem">
+        <div class="editicon-image">
+            <div id="editicon"
+                style="overflow: hidden; position: relative;">
+                <!-- Imagem de fundo será aplicada via CSS -->
+                <img id="editicon-child" src="">
+            </div>
+
+        </div>
+        <!--<label>Tamanho do Ícone:</label>-->
+        <input id="icon-zoom" class="hidden" type="range" min="0.3" max="2" step="0.01" value="1">
+
+        <h3>Alterar Cor de Fundo</h3>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <label for="background-color1">Cor 1:</label>
+            <input type="color" id="background-color1" value="#ffffff">
+            <label for="background-color2">Cor 2:</label>
+            <input type="color" id="background-color2" value="#ffffff">
+
+        </div>
+        <h3>Estilo do Nome do Usuário</h3>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <label for="user-gradient-color1">Cor 1:</label>
+            <input type="color" id="user-gradient-color1" value="#ffffff">
+            <label for="user-gradient-color2">Cor 2:</label>
+            <input type="color" id="user-gradient-color2" value="#ffffff">
+            <label for="user-border-color">Cor da Borda:</label>
+            <input type="color" id="user-border-color" value="#000000">
+        </div>
+
+        <button id="savebackground" onclick="saveBackground()">Salvar BackGround</button>
+        <button onclick="close_editlayout()">Fechar Janela</button>
+    </div>
+
+    <div id="card-input-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Adicionar Novo Cartão</h2>
+            <input type="text" id="input-card-name" placeholder="Nome da Carta">
+            <input type="text" id="input-card-comment" placeholder="Comentário">
+            <input type="text" id="input-card-image" placeholder="URL da Imagem">
+            <div class="modal-buttons">
+                <button onclick="submitCardInput()">Adicionar</button>
+                <button onclick="closeCardInputModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+<script>
+    // ################## ROTINAS $ VARIAVEIS GLOBAIS #################//
+
+
+    let currentUser = null; // Variável global para armazenar o usuário logado
+
+    // Configuração do Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyCvMTjow03ppCTtOZAqbGdEQE63kgh66J8",
+        authDomain: "animes-list01.firebaseapp.com",
+        databaseURL: "https://animes-list01-default-rtdb.firebaseio.com",
+        projectId: "animes-list01",
+        storageBucket: "animes-list01.appspot.com",
+        messagingSenderId: "1072792842054",
+        appId: "1:1072792842054:web:12b49d8e7160f82de97f47",
+        measurementId: "G-6VX3Z36RQ9"
+    };
+
+    document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+        menu.style.left = e.pageX + 'px';
+        menu.style.top = e.pageY + 'px';
+        menu.style.display = 'block';
+        ajustarMenu(menu);
+        submenu.style.display = 'none';
+     //   subsubmenu1.style.display = 'none';
+    //    subsubmenu2.style.display = 'none';
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!menu.contains(e.target) && !submenu.contains(e.target)) {
+            menu.style.display = 'none';
+            submenu.style.display = 'none';
+            submenu2.style.display = 'none';
+        //    subsubmenu1.style.display = 'none';
+         //   subsubmenu2.style.display = 'none';
+        }
+    });
+
+    opcao1.addEventListener('click', function (e) {
+        submenu.style.left = (menu.offsetLeft + menu.offsetWidth) + 'px';
+        submenu.style.top = menu.offsetTop + 'px';
+        submenu.style.display = 'block';
+        ajustarMenu(submenu);
+        submenu2.style.display = 'none';
+        submenu2.style.display = 'none';
+    });
+
+    opcao2.addEventListener('click', function (e) {
+        submenu2.style.left = (menu.offsetLeft + menu.offsetWidth) + 'px';
+        submenu2.style.top = menu.offsetTop + 'px';
+        submenu2.style.display = 'block';
+        ajustarMenu(submenu2);
+        submenu.style.display = 'none';
+        submenu.style.display = 'none';
+    });
+
+    function ajustarMenu(menu) {
+  const contentEl = document.getElementsByClassName("content")[0];
+  const janelaLargura = contentEl.clientWidth;
+  const janelaAltura = contentEl.clientHeight;
+  const contentLeft = contentEl.getBoundingClientRect().left;
+  const contentTop = contentEl.getBoundingClientRect().top;
+
+  const menuRect = menu.getBoundingClientRect();
+
+  // Ajuste horizontal
+  if (menuRect.right > contentLeft + janelaLargura) {
+    const novaEsquerda = contentLeft + janelaLargura - menu.offsetWidth;
+    menu.style.left = Math.max(novaEsquerda, contentLeft) + 'px';
+  }
+
+  // Ajuste vertical
+  if (menuRect.bottom > contentTop + janelaAltura) {
+    const novoTopo = contentTop + janelaAltura - menu.offsetHeight;
+    menu.style.top = Math.max(novoTopo, contentTop) + 'px';
+  }
+}
+
+
+
+    // Variável global para armazenar o cartão selecionado
+    let selectedCard = null;
+    let selectedImg = null;
+    let posX = 0, posY = 0;
+    let startX, startY;
+    let isDragging = false;
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    let trofeus = {
+        bronze: 'data:image/png;base64,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',
+        prata: 'data:image/png;base64,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',    // idem
+        ouro: 'data:image/png;base64,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'    // idem
+    };
+    document.getElementById('trofeus-ouro-img').src = trofeus.ouro;
+    document.getElementById('trofeus-prata-img').src = trofeus.prata;
+    document.getElementById('trofeus-bronze-img').src = trofeus.bronze;
+
+    document.getElementById('trofeu-img-ouro').src = trofeus.ouro;
+    document.getElementById('trofeu-img-prata').src = trofeus.prata;
+    document.getElementById('trofeu-img-bronze').src = trofeus.bronze;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const storedUser = localStorage.getItem("currentUser");
+
+        if (storedUser) {
+            currentUser = storedUser;
+
+            const usuarioRef = database.ref(`usuarios/${currentUser}/welcome/boasvindas`);
+            usuarioRef.once("value").then((snapshot) => {
+                const boasVindas = snapshot.val();
+                document.getElementById('welcome-message').style.display = boasVindas ? 'none' : 'block';
+            });
+
+            // Atualizar o nome do usuário na barra
+            document.getElementById("user-display").textContent = `${currentUser}`;
+
+            // Mostrar elementos de usuário logado
+            document.getElementById("navbar").classList.remove("hidden");
+
+
+            // Ocultar os formulários de login e registro
+            document.getElementById("login-container").classList.add("hidden");
+            document.getElementById("register-container").classList.add("hidden");
+
+            // Carregar sessões e configurações
+            loadAllSessions();
+            loadBackground();
+            applyUserDisplayStyle();
+            loadUserList();
+            contarTrofeus(storedUser);
+
+
+            makeDraggableZoomable("background-image", "icon-zoom");
+            makeDraggableZoomable("user-icon", "icon-zoom");
+            makeDraggableZoomable("editlayout-child", "editlayout-zoom");
+            makeDraggableZoomable("editicon-child", "icon-zoom");
+        } else {
+            // Mostrar apenas o formulário de login
+            document.getElementById("login-container").classList.remove("hidden");
+            document.getElementById("login-container").classList.add("active");
+
+            document.getElementById("register-container").classList.add("hidden");
+            document.getElementById("register-container").classList.remove("active");
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const contextMenu = document.getElementById("menu");
+    });
+
+    firebase.database().ref("messages").orderByKey().on("child_added", function (snapshot) {
+        const msg = snapshot.val();
+        const messagesDiv = document.getElementById("chat-messages");
+
+        // Verifica se o estilo de gradiente existe e ajusta a forma de aplicação
+        const gradientStyle = msg.style
+            ? `background: ${msg.style}; -webkit-background-clip: text; color: transparent;`
+            : 'font-weight: bold;';
+
+        const messageElement = document.createElement("div");
+        messageElement.innerHTML = `
+  <div class="chat-message">
+  <div class="message-header">
+    <strong class="username-chat" style="${gradientStyle}">${msg.user}:</strong>
+    <span class="timestamp">${msg.timestamp || ""}</span>
+  </div>
+  <div class="message-body">
+    ${msg.text}
+  </div>
+</div>
+
+`;
+        messagesDiv.appendChild(messageElement);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const backgroundUrlInput = document.getElementById("background-url");
+    const backgroundImg = document.getElementById("background-image");
+    const editlayoutchild = document.getElementById("editlayout-child");
+    if (backgroundUrlInput && backgroundImg) {
+        // Atualiza a imagem com o valor atual ao carregar a página
+        const url = backgroundUrlInput.value.trim();
+        if (url) {
+            backgroundImg.src = url;
+        }
+
+        // Atualiza a imagem sempre que o valor for alterado
+        backgroundUrlInput.addEventListener("input", () => {
+            const newUrl = backgroundUrlInput.value.trim();
+            backgroundImg.src = newUrl || ""; // Define "" se vazio
+            editlayoutchild.src = newUrl || ""; // Define "" se vazio
+        });
+    }
+});
+
+
+    // ################## ROTINAS & VARIAVEIS GLOBAIS #################//
+</script>
+<script>
+    //###############  FUNCOES ###############//
+
+    function toggleSidebar() {
+        const container = document.getElementById('gridContainer');
+        container.classList.toggle('sidebar-hidden');
+    }
+    // Função para alternar entre sessões
+    function showSession(session) {
+        console.log("Sessão selecionada:", session);
+        const sections = ["filmes", "jogos", "livros", "animes", "kids", "series", "editlayout"];
+        sections.forEach((s) => {
+            const sectionContainer = document.getElementById(s);
+            if (sectionContainer) {
+                if (s === session) {
+                    sectionContainer.classList.add("active");
+                    sectionContainer.classList.remove("hidden");
+                } else {
+                    sectionContainer.classList.remove("active");
+                    sectionContainer.classList.add("hidden");
+                }
+            }
+        });
+        // Verificar se está na sessão de jogos
+        const controfeus = document.getElementsByClassName("cont-trofeu");
+        if (session === "jogos") {
+            for (let i = 0; i < controfeus.length; i++) {
+                controfeus[i].classList.remove("hidden");
+            }
+            document.getElementById("opcao2").classList.remove("hidden")
+        } else {
+            for (let i = 0; i < controfeus.length; i++) {
+                controfeus[i].classList.add("hidden");
+            }
+            document.getElementById("opcao2").classList.add("hidden")
+        }
+    }
+
+    function close_editlayout() {
+            document.getElementById("editlayout").classList.remove("active");
+            document.getElementById("editlayout").classList.add("hidden");
+        }
+
+    // Função para adicionar novo cartão ao Firebase e à interface
+    function openCardInputModal() {
+        document.getElementById('card-input-modal').classList.remove('hidden');
+    }
+
+    function closeCardInputModal() {
+        document.getElementById('card-input-modal').classList.add('hidden');
+        document.getElementById('input-card-name').value = '';
+        document.getElementById('input-card-comment').value = '';
+        document.getElementById('input-card-image').value = '';
+    }
+
+    function submitCardInput() {
+        if (!currentUser) {
+            alert("Você precisa estar logado para adicionar um cartão.");
+            return;
+        }
+
+        const name = document.getElementById('input-card-name').value.trim();
+        const comment = document.getElementById('input-card-comment').value.trim();
+        const image = document.getElementById('input-card-image').value.trim();
+
+        const sections = ['filmes', 'jogos', 'livros', 'animes', 'kids', 'series'];
+        let session = null;
+        for (let s of sections) {
+            const el = document.getElementById(s);
+            if (el && el.classList.contains('active')) {
+                session = s;
+                break;
+            }
+        }
+
+        if (!session) {
+            alert("Nenhuma seção ativa encontrada.");
+            return;
+        }
+
+        if (name && comment && image) {
+            const cardData = { name, comment, image };
+            const cardID = name.replace(/\s+/g, '_').toLowerCase();
+
+            const ref = database.ref(`usuarios/${currentUser}/${session}/${cardID}`);
+            ref.set(cardData)
+                .then(() => {
+                    const cardRow = document.getElementById(`card-row-${session}`);
+                    cardRow.appendChild(createCard(cardData, cardID));
+                    closeCardInputModal();
+                })
+                .catch((error) => {
+                    console.error("Erro ao adicionar cartão:", error);
+                    alert("Erro ao adicionar cartão.");
+                });
+        } else {
+            alert("Todos os campos são obrigatórios!");
+        }
+    }
+
+
+
+
+    // Carregar todas as sessões ao iniciar
+    function loadAllSessions() {
+        ["filmes", "jogos", "livros", "animes", "kids", "series"].forEach((session) => loadCards(session));
+    }
+
+    // Função para virar a carta ao clicar
+    function flipCard(event) {
+        const card = event.currentTarget;
+        card.classList.toggle("flipped");
+    }
+
+
+    function atribuirTrofeu(tipo) {
+        if (selectedCard) {
+            // Obter informações do cartão e do Firebase
+            const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
+            const session = cardRowId.split("-")[2]; // Ex: "animes"
+            const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+            if (!cardKey) {
+                alert("Erro: Não foi possível identificar o cartão.");
+                return;
+            }
+            const ref = database.ref(`usuarios/${currentUser}/${session}/${cardKey}`);
+            ref.update({ trofeu: tipo })
+                .then(() => {
+                    alert(`Troféu "${tipo}" atribuído com sucesso!`);
+                })
+                .catch((error) => {
+                    console.error("Erro ao atribuir troféu:", error);
+                });
+        }
+    }
+
+
+    // Função para editar um campo do cartão
+    function editCard(field) {
+        if (selectedCard) {
+            // Obter informações do cartão e do Firebase
+            const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
+            const session = cardRowId.split("-")[2]; // Ex: "animes"
+            const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+
+            if (!cardKey) {
+                alert("Erro: Não foi possível identificar o cartão.");
+                return;
+            }
+
+            const ref = database.ref(`usuarios/${currentUser}/${session}/${cardKey}`);
+
+            // Prompt para o novo valor
+            let currentValue = "";
+            if (field === "image") {
+                const imgElement = selectedCard.querySelector(`.${field}`);
+                currentValue = imgElement?.src || "";
+            } else {
+                const textElement = selectedCard.querySelector(`.${field}`);
+                currentValue = textElement?.textContent || "";
+            }
+            const newValue = prompt(`Digite o novo valor para ${field}:`, currentValue);
+
+            if (newValue) {
+                // Atualizar no Firebase
+                const updateData = { [field]: newValue };
+                ref.update(updateData).then(() => {
+                    // Atualizar na interface
+                    const elementToUpdate = selectedCard.querySelector(`.${field}`);
+                    if (field === "image") {
+                        elementToUpdate.src = newValue;
+                    } else {
+                        elementToUpdate.textContent = newValue;
+                    }
+                    alert(`${field} atualizado com sucesso!`);
+                }).catch((error) => {
+                    alert(`Erro ao atualizar ${field}: ${error.message}`);
+                });
+            }
+        }
+    }
+
+    function deleteCard() {
+        if (selectedCard) {
+            // Obter informações do cartão e do Firebase
+            const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
+            const session = cardRowId.split("-")[2]; // Ex: "animes"
+            const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+
+            if (!cardKey) {
+                alert("Erro: Não foi possível identificar o cartão.");
+                return;
+            }
+
+            const ref = database.ref(`usuarios/${currentUser}/${session}/${cardKey}`);
+
+            // Confirmar exclusão
+            if (confirm("Tem certeza de que deseja excluir este cartão?")) {
+                ref.remove()
+                    .then(() => {
+                        selectedCard.remove(); // Remover da interface
+                        alert("Cartão excluído com sucesso!");
+                    })
+                    .catch((error) => {
+                        alert(`Erro ao excluir cartão: ${error.message}`);
+                    });
+            }
+        }
+    }
+
+    // Criar cartões com a chave do Firebase
+    function createCard(data, key) {
+
+        const cardContainer = document.createElement("div");
+        cardContainer.classList.add("card-container");
+        cardContainer.setAttribute("onclick", "flipCard(event)");
+        cardContainer.setAttribute("oncontextmenu", "showContextMenu(event)");
+        cardContainer.setAttribute("data-key", key); // Armazena a chave do Firebase
+
+        const card = document.createElement("div");
+        card.classList.add("card");
+
+        // Frente da carta
+        const front = document.createElement("div");
+        front.classList.add("front");
+        const img = document.createElement("img");
+        img.src = data.image || "https://via.placeholder.com/300x400";
+        img.alt = data.name || "Frente da Carta";
+
+        if (data.crop) {
+            img.style.position = "absolute";
+            img.style.height = "100%";
+            img.style.width = "auto";
+            img.style.left = data.crop.left || "0px";
+            img.style.top = data.crop.top || "0px";
+            img.style.transform = `scale(${data.crop.zoom || 1})`;
+        }
+        front.style.overflow = "hidden";
+        front.appendChild(img);
+
+        if (data.trofeu) {
+            const trofeuImg = document.createElement("img");
+            if (data.trofeu === "platina") {
+                trofeuImg.src = trofeus.ouro; // ex: "imagens/platina.png"
+            } else if (data.trofeu === "zerado") {
+                trofeuImg.src = trofeus.prata; // ex: "imagens/zerado.png"
+            } else if (data.trofeu === "jogado") {
+                trofeuImg.src = trofeus.bronze; // ex: "imagens/jogado.png"
+            }
+            trofeuImg.alt = "external-trophy-reward-and-badges-justicon-flat-justicon-1";
+            trofeuImg.style.position = "absolute";
+            trofeuImg.style.bottom = "10px";
+            trofeuImg.style.right = "10px";
+            trofeuImg.style.width = "40px";  // Ajuste o tamanho conforme necessário
+            trofeuImg.style.height = "40px";
+            trofeuImg.style.zIndex = "2";
+
+            front.appendChild(trofeuImg);
+        }
+
+        // Verso da carta
+        const back = document.createElement("div");
+        back.classList.add("back");
+
+        const cardName = document.createElement("h3");
+        cardName.classList.add("name");
+        cardName.style.color = "gold"
+        cardName.textContent = data.name || "Nome Desconhecido";
+
+        const cardText = document.createElement("div");
+        cardText.classList.add("comment");
+        cardText.textContent = data.comment || "Descrição não disponível";
+
+        back.appendChild(cardName);
+        back.appendChild(cardText);
+        card.appendChild(front);
+        card.appendChild(back);
+        cardContainer.appendChild(card);
+
+        cardContainer.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            selectedCard = this;
+            selectedImg = this.querySelector('img');
+
+            const menu = document.getElementById('context-menu');
+            menu.style.top = `${event.clientY}px`;
+            menu.style.left = `${event.clientX}px`;
+            menu.style.display = 'block';
+        });
+
+
+        return cardContainer;
+
+
+    }
+
+    function moveCard(newSession) {
+        if (!selectedCard) {
+            alert("Nenhum cartão selecionado.");
+            return;
+        }
+
+        // Obter informações do cartão e da sessão atual
+        const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
+        const currentSession = cardRowId.split("-")[2]; // Ex: "animes"
+        const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+
+        if (!cardKey) {
+            alert("Erro: Não foi possível identificar o cartão.");
+            return;
+        }
+
+        if (!newSession || !["filmes", "jogos", "livros", "animes", "kids", "series", "editlayout"].includes(newSession)) {
+            alert("Sessão inválida.");
+            return;
+        }
+
+        // Referência ao cartão no Firebase
+        const currentRef = database.ref(`usuarios/${currentUser}/${currentSession}/${cardKey}`);
+        const newRef = database.ref(`usuarios/${currentUser}/${newSession}/${cardKey}`);
+
+        // Mover o cartão
+        currentRef.once("value", (snapshot) => {
+            const cardData = snapshot.val();
+            if (cardData) {
+                newRef.set(cardData) // Adicionar o cartão na nova sessão
+                    .then(() => {
+                        currentRef.remove() // Remover o cartão da sessão atual
+                            .then(() => {
+                                selectedCard.remove(); // Remover da interface
+                                alert("Cartão movido com sucesso!");
+                            })
+                            .catch((error) => {
+                                console.error("Erro ao remover o cartão da sessão atual:", error);
+                            });
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao mover o cartão para a nova sessão:", error);
+                    });
+            } else {
+                alert("Erro: Não foi possível encontrar os dados do cartão.");
+            }
+        });
+    }
+
+    // Carregar cartões de uma sessão do Firebase
+
+    // Carregar todas as sessões ao iniciar
+    function loadAllSessions() {
+        ["filmes", "jogos", "livros", "animes", "kids", "series", "editlayout"].forEach((session) => loadCards(session));
+    }
+
+    // Mostrar formulário de registro
+    function showRegister() {
+        document.getElementById("login-container").classList.add("hidden");
+        document.getElementById("login-container").classList.remove("active");
+        document.getElementById("register-container").classList.remove("hidden");
+        document.getElementById("register-container").classList.add("active");
+    }
+
+    function showLogin() {
+        document.getElementById("register-container").classList.add("hidden");
+        document.getElementById("register-container").classList.remove("active");
+        document.getElementById("login-container").classList.remove("hidden");
+        document.getElementById("login-container").classList.add("active");
+    }
+
+    // Registrar novo usuário
+    function register() {
+        const username = document.getElementById("register-username").value;
+        const password = document.getElementById("register-password").value;
+
+        if (!username || !password) {
+            alert("Preencha todos os campos!");
+            return;
+        }
+
+        const ref = database.ref(`usuarios/${username}`);
+        ref.once("value", (snapshot) => {
+            if (snapshot.exists()) {
+                alert("Usuário já existe!");
+            } else {
+                ref.set({ senha: password })
+                    .then(() => {
+                        alert("Usuário registrado com sucesso!");
+                        showLogin();
+                    })
+                    .catch((error) => {
+                        alert(`Erro ao registrar: ${error.message}`);
+                    });
+            }
+        });
+    }
+
+    function loadCards(session) {
+        if (!currentUser) {
+            console.error("Nenhum usuário está logado.");
+            return;
+        }
+
+        const ref = database.ref(`usuarios/${currentUser}/${session}`);
+        ref.once("value", (snapshot) => {
+            const data = snapshot.val();
+            const cardRow = document.getElementById(`card-row-${session}`);
+
+            if (!cardRow) {
+                console.warn(`Elemento com ID card-row-${session} não encontrado.`);
+                return;
+            }
+
+            cardRow.innerHTML = ""; // Limpar antes de adicionar
+
+            if (data) {
+                Object.entries(data).forEach(([key, cardData]) => {
+                    cardRow.appendChild(createCard(cardData, key));
+                });
+            } else {
+                console.log(`Nenhum cartão encontrado para a sessão: ${session}`);
+            }
+        }).catch((error) => {
+            console.error(`Erro ao carregar cartões da sessão ${session}:`, error);
+        });
+    }
+
+
+    function moveCard() {
+        if (!selectedCard) {
+            alert("Nenhum cartão selecionado.");
+            return;
+        }
+
+        // Obter informações do cartão e da sessão atual
+        const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
+        const currentSession = cardRowId.split("-")[2]; // Ex: "animes"
+        const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+
+        if (!cardKey) {
+            alert("Erro: Não foi possível identificar o cartão.");
+            return;
+        }
+
+        // Referência ao cartão no Firebase
+        const currentRef = database.ref(`usuarios/${currentUser}/${currentSession}/${cardKey}`);
+        const newRef = database.ref(`usuarios/${currentUser}/${newSession}/${cardKey}`);
+
+        // Mover o cartão
+        currentRef.once("value", (snapshot) => {
+            const cardData = snapshot.val();
+            if (cardData) {
+                newRef.set(cardData) // Adicionar o cartão na nova sessão
+                    .then(() => {
+                        currentRef.remove() // Remover o cartão da sessão atual
+                            .then(() => {
+                                selectedCard.remove(); // Remover da interface
+                                alert("Cartão movido com sucesso!");
+                            })
+                            .catch((error) => {
+                                console.error("Erro ao remover o cartão da sessão atual:", error);
+                            });
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao mover o cartão para a nova sessão:", error);
+                    });
+            } else {
+                alert("Erro: Não foi possível encontrar os dados do cartão.");
+            }
+        });
+    }
+
+    function moveCardTo(newSession) {
+        if (!selectedCard) {
+            alert("Nenhum cartão selecionado.");
+            return;
+        }
+
+        // Obter informações do cartão e da sessão atual
+        const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
+        const currentSession = cardRowId.split("-")[2]; // Ex: "animes"
+        const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+
+        if (!cardKey) {
+            alert("Erro: Não foi possível identificar o cartão.");
+            return;
+        }
+
+        // Referência ao cartão no Firebase
+        const currentRef = database.ref(`usuarios/${currentUser}/${currentSession}/${cardKey}`);
+        const newRef = database.ref(`usuarios/${currentUser}/${newSession}/${cardKey}`);
+
+        // Mover o cartão
+        currentRef.once("value", (snapshot) => {
+            const cardData = snapshot.val();
+            if (cardData) {
+                newRef.set(cardData) // Adicionar o cartão na nova sessão
+                    .then(() => {
+                        currentRef.remove() // Remover o cartão da sessão atual
+                            .then(() => {
+                                selectedCard.remove(); // Remover da interface
+                                alert(`Cartão movido para ${newSession} com sucesso!`);
+                            })
+                            .catch((error) => {
+                                console.error("Erro ao remover o cartão da sessão atual:", error);
+                            });
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao mover o cartão para a nova sessão:", error);
+                    });
+            } else {
+                alert("Erro: Não foi possível encontrar os dados do cartão.");
+            }
+        });
+    }
+
+    // Login do usuário
+    function login() {
+        const username = document.getElementById("login-username").value;
+        const password = document.getElementById("login-password").value;
+
+        if (!username || !password) {
+            alert("Preencha todos os campos!");
+            return;
+        }
+
+        const ref = database.ref(`usuarios/${username}`);
+        ref.once("value", (snapshot) => {
+            if (snapshot.exists() && snapshot.val().senha === password) {
+                alert("Login realizado com sucesso!");
+                currentUser = username;
+
+                // Salvar o usuário no Local Storage
+                localStorage.setItem("currentUser", currentUser);
+
+                console.log("boasvindas", ref.welcome?.boasvindas);
+                const usuarioRef = database.ref(`usuarios/${currentUser}/welcome/boasvindas`);
+                usuarioRef.once("value").then((snapshot) => {
+                    const boasVindas = snapshot.val();
+                    document.getElementById('welcome-message').style.display = boasVindas ? 'none' : 'block';
+                });
+
+                // Atualizar o nome do usuário na barra
+                document.getElementById("user-display").textContent = `${currentUser}`;
+
+                // Mostrar a barra de navegação e as sessões
+                document.getElementById("navbar").classList.remove("hidden");
+                document.getElementById("filmes").classList.remove("hidden");
+                document.getElementById("jogos").classList.remove("hidden");
+                document.getElementById("livros").classList.remove("hidden");
+                document.getElementById("animes").classList.remove("hidden");
+                document.getElementById("kids").classList.remove("hidden");
+                document.getElementById("series").classList.remove("hidden");
+
+                // Ocultar o formulário de login
+                document.getElementById("login-container").classList.remove("active");
+                document.getElementById("login-container").classList.add("hidden");
+                document.getElementById("register-container").classList.remove("active");
+                document.getElementById("register-container").classList.add("hidden");
+
+
+                // Carregar os cartões do usuário
+                loadBackground();
+                applyUserDisplayStyle();
+                loadAllSessions();
+                loadUserList();
+                contarTrofeus(username);
+
+            } else {
+                alert("Usuário ou senha incorretos!");
+            }
+        });
+    }
+
+    function logout() {
+        // Remover o usuário do Local Storage
+        localStorage.removeItem("currentUser");
+
+        // Redefinir a interface
+        currentUser = null;
+        document.getElementById("user-display").textContent = "";
+        document.getElementById("navbar").classList.add("hidden");
+        document.getElementById("filmes").classList.add("hidden");
+        document.getElementById("jogos").classList.add("hidden");
+        document.getElementById("livros").classList.add("hidden");
+        document.getElementById("animes").classList.add("hidden");
+        document.getElementById("kids").classList.add("hidden");
+        document.getElementById("series").classList.add("hidden");
+
+        // Mostrar o formulário de login
+        document.getElementById("login-container").classList.add("active");
+        document.getElementById("login-container").classList.remove("hidden");
+
+        // Recarregar a página para garantir que o estado seja atualizado
+        location.reload();
+    }
+
+    function saveBackground() {
+        const backgroundUrl = document.getElementById("background-url").value || "x"; // Enviar "x" se o campo estiver vazio
+        const iconUrl = document.getElementById("icon-url").value || "x"; // Enviar "x" se o campo estiver vazio
+        const color1 = document.getElementById("background-color1").value;
+        const color2 = document.getElementById("background-color2").value;
+
+        const ref = database.ref(`usuarios/${currentUser}/background`);
+
+        // Salvar os dados no Firebase
+        ref.set({
+            url: backgroundUrl,
+            iconUrl: iconUrl,
+            width: backgroundWidth || 100,
+            height: backgroundHeight || 100,
+            color1: color1 || null,
+            color2: color2 || null,
+        })
+            .then(() => {
+                alert("Imagem de fundo, segunda imagem e estilo dos botões salvos com sucesso!");
+            })
+            .catch((error) => {
+                console.error("Erro ao salvar os dados:", error);
+                alert("Erro ao salvar os dados.");
+            });
+    }
+
+    // Carregar a imagem de fundo ao iniciar
+    function loadBackground(usuarioprocurado) {
+        if (!currentUser) return;
+
+        let ref = database.ref(`usuarios/${currentUser}/background`);
+        if (usuarioprocurado != null) {
+            ref = database.ref(`usuarios/${usuarioprocurado}/background`);
+            console.log("Carregando dados de outro usuário:", usuarioprocurado);
+        }
+
+        ref.once("value", (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                let backgroundStyle = "";
+
+                // Adicionar a imagem de fundo, se existir
+                if (data.url && data.url !== "x") {
+                    backgroundStyle += `url('')`;
+
+                    document.getElementById("gridContainer").getElementsByClassName("content").src = data.url;
+                    document.getElementById("background-url").value = data.url;
+                    document.getElementById("editlayout-child").src = data.url;
+                } else {
+                    document.getElementById("background-url").value = "";
+                }
+
+                // Adicionar a imagem de fundo, se existir
+                if (data.iconUrl && data.iconUrl !== "x") {
+                    document.getElementById("icon-Url").value = data.iconUrl;
+                    document.getElementById("user-icon").src = data.iconUrl;
+                    document.getElementById("editicon-child").src = data.iconUrl;
+                }
+
+                if (data.editlayout) {
+                    const layoutImg = document.getElementById("editlayout-child");
+                    layoutImg.style.top = data.editlayout.top || "0px";
+                    layoutImg.style.left = data.editlayout.left || "0px";
+                    layoutImg.style.transform = data.editlayout.zoom || "scale(1)";
+                }
+
+                // if (data.editicon) {
+                //     const iconImg = document.getElementById("editicon-child");
+                //     iconImg.style.top = data.editicon.top || "0px";
+                //     iconImg.style.left = data.editicon.left || "0px";
+                //     iconImg.style.transform = data.editicon.zoom || "scale(1)";
+                // }
+
+                // Adicionar a cor de fundo (gradiente ou sólida)
+                if (data.color1 && data.color2 && data.color1 !== data.color2) {
+                    backgroundStyle += `, linear-gradient(135deg, ${data.color1}, ${data.color2})`;
+                } else if (data.color1) {
+                    backgroundStyle += `, ${data.color1}`;
+                }
+
+                // Aplicar o estilo combinado ao body
+                //  document.body.style.background = backgroundStyle;
+                // Pega o primeiro elemento com a classe "grid-container"
+                var gridContainer = document.getElementsByClassName("grid-container")[0];
+
+                // Define o background
+                gridContainer.style.background = backgroundStyle;
+
+                //document.body.iconUrl = iconUrl;
+
+
+                // Atualizar os controles de fundo
+                document.getElementById("background-color1").value = data.color1 || "#ffffff";
+                document.getElementById("background-color2").value = data.color2 || "#ffffff";
+
+
+                if (data.userNameStyle) {
+                    document.getElementById("user-gradient-color1").value = data.userNameStyle.color1 || "#ffffff";
+                    document.getElementById("user-gradient-color2").value = data.userNameStyle.color2 || "#ffffff";
+                    document.getElementById("user-border-color").value = data.userNameStyle.border || "#000000";
+                    applyUserDisplayStyle(); // aplica o estilo ao vivo
+                }
+                if (data.backgroundImg) {
+                    const bgImg = document.getElementById("background-image");
+                    bgImg.src = data.backgroundImg.url;
+                    bgImg.style.left = data.backgroundImg.left || "0px";
+                    bgImg.style.top = data.backgroundImg.top || "0px";
+                    bgImg.style.transform = data.backgroundImg.zoom || "scale(1)";
+                }
+
+                // if (data.userIcon) {
+                //     const icon = document.getElementById("user-icon");
+                //     icon.src = data.userIcon.url;
+                //     icon.style.left = data.userIcon.left || "0px";
+                //     icon.style.top = data.userIcon.top || "0px";
+                //     icon.style.transform = data.userIcon.zoom || "scale(1)";
+                // }
+            }
+            applyLayoutCrop(data);
+
+        }).catch((error) => {
+            console.error("Erro ao carregar os dados:", error);
+        });
+    }
+
+    // Chamar a função para carregar a imagem de fundo ao carregar a página
+    document.addEventListener("DOMContentLoaded", loadBackground);
+
+// Tornar automático com eventos
+["background-url", "user-icon-url", "background-color1", "background-color2"].forEach(id => {
+    document.getElementById(id).addEventListener("input", previewBackground);
+});
+
+
+    // Salvar a cor de fundo no Firebase
+    function saveBackground() {
+        if (!currentUser) return;
+
+        const backgroundUrl = document.getElementById("background-url").value;
+        const iconUrl = document.getElementById("icon-Url").value;
+        const color1 = document.getElementById("background-color1").value;
+        const color2 = document.getElementById("background-color2").value;
+        const editlayoutImg = document.getElementById("editlayout-child");
+        const editiconImg = document.getElementById("editicon-child");
+
+        const data = {
+            url: backgroundUrl || "x",
+            iconUrl: iconUrl || "x",
+            color1,
+            color2,
+            editlayout: {
+                top: editlayoutImg.style.top || "0px",
+                left: editlayoutImg.style.left || "0px",
+                zoom: editlayoutImg.style.transform || "scale(1)"
+            },
+
+            userNameStyle: {
+                color1: document.getElementById("user-gradient-color1").value,
+                color2: document.getElementById("user-gradient-color2").value,
+                border: document.getElementById("user-border-color").value
+            }
+        };
+
+        const backgroundImage = document.getElementById("background-image");
+        //   const userIcon = document.getElementById("user-icon");
+
+        data.backgroundImg = {
+            url: backgroundUrl || "x",
+            left: backgroundImage.style.left,
+            top: backgroundImage.style.top,
+            zoom: backgroundImage.style.transform
+        };
+
+        data.userIcon = {
+            url: iconUrl || "x",
+        };
+
+        const ref = database.ref(`usuarios/${currentUser}/background`);
+        ref.set(data).then(() => {
+            alert("Layout salvo com sucesso!");
+        }).catch((error) => {
+            console.error("Erro ao salvar:", error);
+        });
+    }
+
+
+    function applyCrop() {
+        const editable = document.getElementById('editable-img');
+        const zoom = parseFloat(document.getElementById('zoom-range').value);
+        const imgLeft = editable.style.left;
+        const imgTop = editable.style.top;
+
+        // Aplicar na imagem real
+        selectedImg.style.left = imgLeft;
+        selectedImg.style.top = imgTop;
+        selectedImg.style.transform = `scale(${zoom})`;
+        selectedImg.style.position = "absolute";
+        selectedImg.style.height = "100%";
+        selectedImg.style.width = "auto";
+
+        // SALVAR NO FIREBASE (ajuste o caminho conforme seu projeto!)
+        const cardKey = selectedCard.getAttribute("data-key"); // ou outro identificador
+        if (!currentUser || !cardKey) return;
+
+        const cardRowId = selectedCard.closest(".card-row").id;
+        const session = cardRowId.split("-")[2]; // filmes, jogos, etc.
+        const ref = firebase.database().ref(`usuarios/${currentUser}/${session}/${cardKey}`);
+
+        ref.update({
+            crop: {
+                left: imgLeft,
+                top: imgTop,
+                zoom: zoom
+            }
+        }).then(() => {
+            console.log("Crop salvo no Firebase!");
+        });
+
+        closeModal();
+    }
+
+    function closeModal() {
+        document.getElementById('crop-modal').style.display = 'none';
+    }
+
+    function editCardCrop() {
+        const modal = document.getElementById('crop-modal');
+        const editable = document.getElementById('editable-img');
+        const zoomSlider = document.getElementById('zoom-range');
+
+        if (!selectedImg) return;
+
+        // Aplica imagem no editor
+        editable.src = selectedImg.src;
+        editable.style.left = selectedImg.style.left || "0px";
+        editable.style.top = selectedImg.style.top || "0px";
+        zoomSlider.value = selectedImg.style.transform?.match(/scale\(([\d.]+)\)/)?.[1] || "1";
+        editable.style.transform = `scale(${zoomSlider.value})`;
+
+        // Reset posição
+        posX = parseFloat(editable.style.left) || 0;
+        posY = parseFloat(editable.style.top) || 0;
+
+        modal.style.display = 'flex';
+
+        // Drag & Drop
+        editable.onmousedown = (e) => {
+            isDragging = true;
+            startX = e.clientX - posX;
+            startY = e.clientY - posY;
+            editable.style.cursor = 'grabbing';
+        };
+        document.onmouseup = () => {
+            isDragging = false;
+            editable.style.cursor = 'grab';
+        };
+        document.onmousemove = (e) => {
+            if (!isDragging) return;
+            posX = e.clientX - startX;
+            posY = e.clientY - startY;
+            editable.style.left = `${posX}px`;
+            editable.style.top = `${posY}px`;
+        };
+        zoomSlider.oninput = () => {
+            editable.style.transform = `scale(${zoomSlider.value})`;
+        };
+    }
+
+    function applyLayoutCrop(data) {
+        const bgImg = document.getElementById('background-image');
+        // const iconImg = document.getElementById('user-icon');
+
+        if (data.backgroundImg) {
+            bgImg.src = data.backgroundImg.url || "";
+            bgImg.style.left = data.backgroundImg.left || "0px";
+            bgImg.style.top = data.backgroundImg.top || "0px";
+            bgImg.style.transform = data.backgroundImg.zoom || "scale(1)";
+        }
+
+        if (data.userIcon) {
+            iconImg.src = data.userIcon.url || "";
+            iconImg.style.left = data.userIcon.left || "0px";
+            iconImg.style.top = data.userIcon.top || "0px";
+            iconImg.style.transform = data.userIcon.zoom || "scale(1)";
+        }
+    }
+
+
+    function saveLayoutCropToFirebase() {
+        const layout = document.getElementById('editlayout');
+        const icon = document.getElementById('edit-icon');
+
+        const cropData = {
+            editlayout: {
+                background: {
+                    url: getComputedStyle(layout).backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, ''),
+                    left: layout.style.backgroundPosition.split(" ")[0] || "0px",
+                    top: layout.style.backgroundPosition.split(" ")[1] || "0px",
+                    zoom: parseFloat(layout.style.backgroundSize) / 100 || 1
+                },
+                icon: {
+                    url: icon.src,
+                    left: icon.style.left || "0px",
+                    top: icon.style.top || "0px",
+                    zoom: parseFloat(icon.style.transform?.match(/scale\(([\d.]+)\)/)?.[1]) || 1
+                }
+            }
+        };
+
+        firebase.database().ref(`usuarios/${currentUser}/editlayout`).set(cropData.editlayout)
+            .then(() => {
+                console.log("Layout crop salvo com sucesso!");
+            })
+            .catch((error) => {
+                console.error("Erro ao salvar layout crop:", error);
+            });
+    }
+
+    function makeDraggableZoomable(imgId, zoomSliderId) {
+            const img = document.getElementById(imgId);
+            const zoomSlider = document.getElementById(zoomSliderId);
+            let isDragging = false;
+            let startX, startY, startLeft, startTop;
+
+            img.addEventListener("mousedown", function (e) {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                startLeft = parseInt(img.style.left || 0);
+                startTop = parseInt(img.style.top || 0);
+                img.style.cursor = "grabbing";
+            });
+
+            document.addEventListener("mouseup", () => {
+                isDragging = false;
+                img.style.cursor = "grab";
+                updateBodyBackground(); // Atualiza o fundo do body ao soltar o mouse
+            });
+
+            document.addEventListener("mousemove", (e) => {
+                if (!isDragging) return;
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                img.style.left = `${startLeft + dx}px`;
+                img.style.top = `${startTop + dy}px`;
+            });
+
+            zoomSlider.addEventListener("input", () => {
+                const zoom = parseFloat(zoomSlider.value);
+                img.style.transform = `scale(${zoom})`;
+                updateBodyBackground(); // Atualiza o fundo do body ao ajustar o zoom
+            });
+        }
+
+
+        function updateBodyBackground() {
+            const bgImg = document.getElementById("background-image");
+            const layoutImg = document.getElementById("editlayout-child");
+
+            bgImg.src = layoutImg.src;
+            bgImg.style.left = layoutImg.style.left;
+            bgImg.style.top = layoutImg.style.top;
+            bgImg.style.transform = layoutImg.style.transform;
+        }
+
+    const inputUrl = document.getElementById("icon-Url");
+    const editIconImg = document.getElementById("editicon-child");
+
+    inputUrl.addEventListener("input", function () {
+        editIconImg.src = this.value;
+    });
+
+    function applyUserDisplayStyle() {
+    const getColor = (id) => document.getElementById(id)?.value || "#000000";
+
+    const color1 = getColor("user-gradient-color1");
+    const color2 = getColor("user-gradient-color2");
+    const borderColor = getColor("user-border-color");
+    const backgroundcolor1 = getColor("background-color1");
+    const backgroundcolor2 = getColor("background-color2");
+
+    const userDisplay = document.getElementById("user-display");
+
+    if (userDisplay) {
+        userDisplay.style.background = `linear-gradient(to right, ${color1}, ${color2})`;
+        userDisplay.style.webkitBackgroundClip = "text";
+        userDisplay.style.webkitTextFillColor = "transparent";
+        userDisplay.style.border = `0px solid ${borderColor}`;
+        userDisplay.style.borderRadius = "8px";
+        userDisplay.style.display = "inline-block";
+    }
+
+    document.documentElement.style.setProperty('--border-color', borderColor);
+    document.documentElement.style.setProperty('--gradient-color1', backgroundcolor1);
+    document.documentElement.style.setProperty('--gradient-color2', backgroundcolor2);
+
+    // Simples verificação de brilho para toggle-button-color
+    const isLight = (hex) => {
+        const r = parseInt(hex.substr(1, 2), 16);
+        const g = parseInt(hex.substr(3, 2), 16);
+        const b = parseInt(hex.substr(5, 2), 16);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness > 128;
+    };
+
+    const toggleColor = (isLight(backgroundcolor1) && isLight(backgroundcolor2)) ? "#000000" : "#ffffff";
+    document.documentElement.style.setProperty('--toggle-button-color', toggleColor);
+}
+
+
+
+
+
+    function loadUserList() {
+        const list = document.getElementById("user-list");
+        list.innerHTML = "";
+
+        database.ref("usuarios").once("value", (snapshot) => {
+            const users = snapshot.val();
+            console.log("🔥 Usuarios encontrados:", users);
+
+            for (const user in users) {
+
+                console.log("👉 Adicionando usuário à lista:", user); // debug
+
+                // Recuperar as cores e imagem do usuário
+                const color1 = users[user]?.background?.userNameStyle?.color1 || "#ffffff";
+                const color2 = users[user]?.background?.userNameStyle?.color2 || "#ffffff";
+                const imgSrc = users[user]?.background?.userIcon?.url || "";
+
+                // Criar o item da lista (li)
+                const li = document.createElement("li");
+                li.textContent = `${user}`;  // Nome do usuário
+
+                // Definir variáveis CSS para gradiente
+                li.style.setProperty('--color1', color1);
+                li.style.setProperty('--color2', color2);
+                li.className = "username-item"
+
+                const span = document.createElement("span");
+                span.className = "user-list-item";  // Usa a classe para aplicar o estilo de layout
+                span.appendChild(li);
+
+                if (imgSrc.trim() !== "") {
+                    const img = document.createElement("img");
+                    img.src = imgSrc;
+                    img.className = "user-icon-friends";
+                    span.appendChild(img);
+                }
+                // Configurar o clique para mostrar o perfil do usuário
+                span.onclick = () => showOtherUserProfile(user);
+
+                // Adicionar o item à lista
+                list.appendChild(span);
+            }
+        });
+
+    }
+
+
+
+    function showOtherUserProfile(user) {
+        document.getElementById("savebackground")?.remove();
+
+        loadBackgrounduser(user);
+        applyUserDisplayStyle();
+        contarTrofeus(user);
+        document.getElementById("user-display").textContent = `${user}`;
+
+        // Encontrar o elemento pelo ID
+        var dropdownMenu = document.getElementById("dropdownMenu");
+
+        try {
+            // Remover o elemento
+            dropdownMenu.remove();
+        } catch (error) {
+        }
+
+        // Esconde todos os botões do menu de contexto
+        document.querySelectorAll(".BotaoDireitoMouse").forEach(btn => btn.classList.add("hidden"));
+
+        // Exibe o botão de copiar card
+        document.querySelector(".copiarCard").classList.remove("hidden");
+
+        const sections = ["filmes", "jogos", "livros", "animes", "kids", "series"];
+        sections.forEach(session => {
+            const ref = database.ref(`usuarios/${user}/${session}`);
+            const cardRow = document.getElementById(`card-row-${session}`);
+            if (cardRow) {
+                cardRow.innerHTML = "";
+            }
+            ref.once("value", (snapshot) => {
+                const data = snapshot.val();
+                if (data && cardRow) {
+                    Object.entries(data).forEach(([key, cardData]) => {
+                        const card = createCard(cardData, key);
+                        card.querySelector(".card").onclick = null;
+                        card.oncontextmenu = null;
+                        cardRow.appendChild(card);
+                    });
+                }
+            });
+        });
+    }
+
+    function loadBackgrounduser(usuarioprocurado) {
+        const ref = database.ref(`usuarios/${usuarioprocurado}/background`);
+        console.log("Carregando dados de outro usuário:", usuarioprocurado);
+
+        ref.once("value", (snapshot) => {
+            const data = snapshot.val();
+            const gridContainer = document.getElementsByClassName("grid-container")[0];
+            let backgroundStyle = "";
+
+            // BACKGROUND IMAGE
+            const backgroundUrl = (data?.url && data.url !== "x") ? data.url : "x";
+            document.getElementById("background-url").value = backgroundUrl;
+            document.getElementById("editlayout-child").src = backgroundUrl;
+
+            const content = document.getElementById("gridContainer").getElementsByClassName("content")[0];
+            if (content) content.src = backgroundUrl;
+
+            // ICON IMAGE
+            const iconUrl = (data?.iconUrl && data.iconUrl !== "x") ? data.iconUrl : "";
+            document.getElementById("icon-Url").value = iconUrl;
+            document.getElementById("user-icon").src = iconUrl;
+            document.getElementById("editicon-child").src = iconUrl;
+
+            // EDITLAYOUT
+            const layoutImg = document.getElementById("editlayout-child");
+            layoutImg.style.top = data?.editlayout?.top || "0px";
+            layoutImg.style.left = data?.editlayout?.left || "0px";
+            layoutImg.style.transform = data?.editlayout?.zoom || "scale(1)";
+
+            // BACKGROUND COLORS
+            const color1 = data?.color1 || "#ffffff";
+            const color2 = data?.color2 || "#ffffff";
+
+            backgroundStyle = (color1 !== color2)
+                ? `linear-gradient(135deg, ${color1}, ${color2})`
+                : color1;
+
+            gridContainer.style.background = backgroundStyle;
+            document.getElementById("background-color1").value = color1;
+            document.getElementById("background-color2").value = color2;
+
+            // USERNAME STYLE
+            const userStyle = data?.userNameStyle || {};
+            document.getElementById("user-gradient-color1").value = userStyle.color1 || "#ffffff";
+            document.getElementById("user-gradient-color2").value = userStyle.color2 || "#ffffff";
+            document.getElementById("user-border-color").value = userStyle.border || "#000000";
+            applyUserDisplayStyle();
+
+            // BACKGROUND IMAGE POSITIONING
+            const bgImg = document.getElementById("background-image");
+            const bgData = data?.backgroundImg;
+            bgImg.src = bgData?.url || "";
+            bgImg.style.left = bgData?.left || "0px";
+            bgImg.style.top = bgData?.top || "0px";
+            bgImg.style.transform = bgData?.zoom || "scale(1)";
+
+            // Apply layout cropping
+            applyLayoutCrop(data || {});
+        }).catch((error) => {
+            console.error("Erro ao carregar os dados:", error);
+        });
+    }
+
+
+
+    function copyCardToMyProfile() {
+        if (!currentUser || !selectedCard) return alert("Você precisa estar logado.");
+
+        const cardRowId = selectedCard.closest(".card-row").id; // card-row-filmes
+        const session = cardRowId.split("-")[2];
+        const cardKey = selectedCard.getAttribute("data-key");
+        const userOrigin = document.getElementById("user-display").textContent; // Nome do usuário visualizado
+
+        if (!userOrigin || !session || !cardKey) {
+            alert("Erro: dados incompletos para copiar.");
+            return;
+        }
+
+        const fromRef = database.ref(`usuarios/${userOrigin}/${session}/${cardKey}`);
+        const toRef = database.ref(`usuarios/${currentUser}/${session}/${cardKey}`);
+
+        fromRef.once("value").then((snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                return toRef.set(data);
+            } else {
+                throw new Error("Card não encontrado.");
+            }
+        }).then(() => {
+            alert("Card copiado com sucesso!");
+            loadCards(session);
+        }).catch((error) => {
+            console.error("Erro ao copiar card:", error);
+            alert("Erro ao copiar o card.");
+        });
+    }
+
+    // Função para contar os troféus
+    function contarTrofeus(usuarioprocurado) {
+        let ouro = 0, prata = 0, bronze = 0;
+        console.log("usuarioprocurado:", usuarioprocurado);
+        console.log("currentUser:", currentUser); // debug
+        // Verificar se usuarioprocurado é uma string válida
+        if (typeof usuarioprocurado !== 'string' || usuarioprocurado.trim() === '') {
+            usuarioprocurado = currentUser;
+        }
+        // Referência ao Firebase para os cartões do usuário
+        let ref = database.ref(`usuarios/${usuarioprocurado}`);
+        console.log("Carregando dados de usuário:", usuarioprocurado);
+        ref.once("value", (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                Object.values(data).forEach(session => {
+                    Object.values(session).forEach(card => {
+                        if (card.trofeu === "platina") {
+                            ouro++;
+                        } else if (card.trofeu === "zerado") {
+                            prata++;
+                        } else if (card.trofeu === "jogado") {
+                            bronze++;
+                        }
+                    });
+                });
+            }
+            // Atualizar os elementos HTML com as quantidades de troféus
+            document.getElementById("trofeus-ouro").textContent = `${ouro}`;
+            document.getElementById("trofeus-prata").textContent = `${prata}`;
+            document.getElementById("trofeus-bronze").textContent = `${bronze}`;
+        });
+    }
+
+    // Chamar a função contarTrofeus ao carregar a página
+    document.addEventListener("DOMContentLoaded", contarTrofeus);
+
+
+    function removerTrofeu() {
+        if (selectedCard) {
+            // Obter informações do cartão e do Firebase
+            const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
+            const session = cardRowId.split("-")[2]; // Ex: "animes"
+            const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+            if (!cardKey) {
+                alert("Erro: Não foi possível identificar o cartão.");
+                return;
+            }
+            const ref = database.ref(`usuarios/${currentUser}/${session}/${cardKey}`);
+            ref.update({ trofeu: null })
+                .then(() => {
+                    alert("Troféu removido com sucesso!");
+                    // Atualizar a interface
+                    const trofeuImg = selectedCard.querySelector(".front img[src*='trofeus']");
+                    if (trofeuImg) {
+                        trofeuImg.remove();
+                    }
+                })
+                .catch((error) => {
+                    console.error("Erro ao remover troféu:", error);
+                });
+        }
+    }
+
+    // Função para filtrar a lista de usuários
+    function filterUserList() {
+        const searchInput = document.getElementById('search-bar').value.toLowerCase();
+        const userList = document.getElementById('user-list');
+        const users = userList.getElementsByTagName('li');
+
+        for (let i = 0; i < users.length; i++) {
+            const user = users[i].textContent.toLowerCase();
+            if (user.includes(searchInput)) {
+                users[i].parentElement.style.display = '';
+            } else {
+                users[i].parentElement.style.display = 'none';
+            }
+        }
+    }
+
+    // Adicionar evento de input ao campo de pesquisa
+    document.getElementById('search-bar').addEventListener('input', filterUserList);
+
+    function fecharboasvindas() {
+        if (!currentUser) return;
+        let ref = database.ref(`usuarios/${currentUser}/welcome`);
+        ref.set({ boasvindas: true })
+        const welcomeMessage = document.getElementById('welcome-message');
+        welcomeMessage.style.display = 'none';
+    }
+
+    function sendMessage() {
+        if (!currentUser) return;
+
+        const input = document.getElementById("chat-input");
+        const text = input.value.trim();
+        if (!text) return;
+
+        const user = currentUser;
+        const display = document.getElementById("user-display");
+        const color1 = document.getElementById("user-gradient-color1").value;
+        const color2 = document.getElementById("user-gradient-color2").value;
+
+        const now = new Date();
+        const pad = (n) => n.toString().padStart(2, "0");
+        const padMs = (n) => n.toString().padStart(3, "0");
+
+        const formattedDate =
+            `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ` +
+            `${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}-${padMs(now.getMilliseconds())}`;
+
+        const formattedDateMsg = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+
+        const message = {
+            user: user,
+            text: text,
+            style: `linear-gradient(135deg, ${color1}, ${color2})`,
+            timestamp: formattedDateMsg
+        };
+
+        const safeKey = Date.now().toString();
+        firebase.database().ref("messages/" + formattedDate).set(message);
+
+        input.value = "";
+    }
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        cleanOldMessages();
+    });
+
+    function cleanOldMessages() {
+        const now = new Date();
+        now.setDate(now.getDate() - 30); // Subtrai 1 dia
+
+        firebase.database().ref("messages").once("value", function (snapshot) {
+            snapshot.forEach(function (childSnapshot) {
+                const key = childSnapshot.key;
+
+                // Extrai a data e hora da chave
+                const [datePart, timePart] = key.split(" ");
+                if (!datePart || !timePart) return;
+
+                // Converte para formato ISO: "2025-04-30T16:30:39.122Z"
+                const isoString = datePart + "T" + timePart.replace(/-/g, ":").replace(/:(\d{3})$/, ".$1") + "Z";
+                const messageDate = new Date(isoString);
+
+                // Compara com 24h atrás
+                if (messageDate < now) {
+                    console.log("Removendo:", key);
+                    firebase.database().ref("messages/" + key).remove();
+                }
+            });
+        });
+    }
+
+    function toggleSubmenu(event) {
+        // Evitar propagação do evento para o elemento pai
+        if (event) {
+            event.stopPropagation();
+        }
+
+        // Encontrar o submenu associado ao botão
+        const submenu = event.target.nextElementSibling;
+
+        if (submenu && submenu.classList.contains("submenu-options")) {
+            // Ajustar a posição do submenu para aparecer à direita do botão
+            const rect = event.target.getBoundingClientRect(); // Posição do botão
+            submenu.style.position = "absolute";
+            submenu.style.left = `${rect.right + 10}px`; // Posição à direita do botão
+            submenu.style.top = `${rect.top}px`; // Mesma altura do botão
+            submenu.classList.toggle("hidden"); // Alternar visibilidade
+        }
+    }
+
+    function toggletrofeu() {
+        const menu = document.getElementById("trofeu-submenu");
+        if (menu.style.display === "block") {
+            menu.style.display = "none";
+        } else {
+            menu.style.display = "block";
+            const submenu = document.querySelector('.submenu-trofeu');
+            submenu.classList.toggle('hidden');
+        }
+    }
+
+    function mostrarTrofeuSubmenu() {
+        const botao = document.getElementById("atribuir-trofeu-btn");
+        const submenu = document.getElementById("trofeu-submenu");
+
+        // Corrige a distância — 6px de margem visual
+        // Temporariamente exibe para calcular dimensões
+        submenu.style.display = "flex";
+        submenu.style.position = "absolute";
+        submenu.style.visibility = "hidden"; // esconde visualmente, mas permite medir
+
+        // Aguarda renderização para obter tamanho real
+        requestAnimationFrame(() => {
+            const width = submenu.offsetWidth;
+            const height = submenu.offsetHeight;
+
+            const centerX = (window.innerWidth - width) / 2;
+            const centerY = (window.innerHeight - height) / 2;
+
+            submenu.style.left = `${centerX}px`;
+            submenu.style.top = `${centerY}px`;
+            submenu.style.visibility = "visible"; // agora exibe normalmente
+        });
+    }
+
+
+
+
+    document.addEventListener('click', function (event) {
+        const submenu = document.getElementById('trofeu-submenu');
+        const context = document.getElementById('context-menu');
+        if (!submenu.contains(event.target) && !context.contains(event.target)) {
+            submenu.style.display = 'none';
+        }
+    });
+
+    
+    function toggleDropdown(event) {
+  event.stopPropagation();
+  const menu = document.getElementById('dropdownMenu');
+  menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+}
+
+const menu_dropdown = document.getElementById('dropdownMenu');
+
+document.addEventListener('click', function (e) {
+    if (!menu_dropdown.contains(e.target)) {
+    menu.style.display = 'none';
+  }
+});
+
+</script>
+
+</html>
