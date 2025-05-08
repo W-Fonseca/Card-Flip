@@ -3,8 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>🚶Card-Flip</title>
-    <link rel="icon" href="caminho/para/sua/logo.ico" type="image/x-icon">
+    <title>Card-Flip</title>
+    <link rel="icon" href="https://img.icons8.com/external-glyphons-amoghdesign/32/external-card-sports-and-games-vol-01-glyphons-amoghdesign.png" type="image/x-icon">
+    
     <style>
         body,
         html {
@@ -291,6 +292,7 @@
             text-align: center;
             width: 20%, 80%;
             height: 30%, 50%;
+            z-index: 2;
             /* max-width: 400px; */
         }
 
@@ -363,13 +365,48 @@
             height: auto;
             box-sizing: border-box;
             width: 100%;
-            aspect-ratio: 3 / 4;
+
             /* Mantém proporção consistente */
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.6s;
             box-sizing: border-box;
         }
+
+        .card-preview, .card-preview * {
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+
+
+
+#cardOverlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    /* Remova o transform: scale */
+}
+
+#cardOverlay .card-container {
+    max-width: 600px; /* Aumenta o tamanho máximo da carta */
+    flex: 1 1 500px;
+}
+
+#cardOverlay .card .back .name {
+    font-size: clamp(2rem, 10vw, 4rem); /* Tamanho dinâmico com base na tela */
+}
+
+#cardOverlay .card .back .comment {
+    font-size: clamp(1.8rem, 6vw, 2.4rem); /* Também ajusta dinamicamente */
+}
 
         .card .front img {
             width: 100%;
@@ -1186,7 +1223,8 @@
         }
 
         #card-input-modal .modal-content {
-            background-color: white;
+            background-color: #002238;
+            color: white;
             padding: 20px;
             border-radius: 12px;
             width: 320px;
@@ -1226,6 +1264,191 @@
     height: 100%;
 }
 
+/* Modal */
+.crop-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.crop-modal .crop-modal-content {
+    background: #002238;
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    position: relative;
+    width: 40%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.crop-modal h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.crop-modal .form-group {
+    margin-bottom: 20px;
+}
+
+.crop-modal label {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.crop-modal input[type="text"], .crop-modal input[type="range"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.crop-modal input[type="range"] {
+    appearance: none;
+    height: 5px;
+    background: #ddd;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.crop-modal input[type="range"]:focus {
+    outline: none;
+}
+
+.crop-modal .crop-box {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.crop-modal #editable-img {
+    position: absolute;
+    cursor: grab;
+    width: auto;
+    height: 100%;
+    transform-origin: center center;
+    transform: scale(1);
+    left: 0px;
+    top: 0px;
+}
+
+/* Modal Buttons */
+.crop-modal .modal-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.crop-modal button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    flex: 1;
+    margin: 0 5px;
+}
+
+.crop-modal #apply-all {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.crop-modal #apply-all:hover {
+    background-color: #45a049;
+}
+
+.crop-modal button[onclick="closeModal()"] {
+    background-color: #f44336;
+    color: white;
+}
+
+.crop-modal button[onclick="closeModal()"]:hover {
+    background-color: #e53935;
+}
+
+#jogos-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    #jogos-scroll {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      padding: 20px;
+      position: relative;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    #jogos-scroll {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+#jogos-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari e Edge */
+}
+
+    .jogo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.297);
+      border-radius: 10px;
+      padding: 10px;
+      color: white;
+      font-size: 0.9rem;
+      backdrop-filter: blur(2px);
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .jogo-item img {
+      width: 100%;
+      max-width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    /* A animação de rolagem será agora controlada de forma manual */
+    @keyframes scroll-up {
+      0% {
+        transform: translateY(0);
+      }
+
+      100% {
+        transform: translateY(-100%);
+      }
+    }
+
     </style>
 
     <style>
@@ -1263,7 +1486,7 @@
             #login-container button,
             #register-container button {
                 width: 90%;
-                font-size: 110%;
+                font-size: 34px;
                 padding: 4%;
                 border-radius: 4vw;
             }
@@ -1276,12 +1499,12 @@
             }
 
             .white-box h2 {
-                font-size: 150%;
+                font-size: 50px;
             }
 
             .white-box p,
             .white-box a {
-                font-size: 110%;
+                font-size: 34px;
             }
 
             #trofeu-submenu,
@@ -1412,7 +1635,25 @@
             line-height: 1.6;
         }
 
+        .crop-modal .crop-modal-content {
+        width: 80%;
+        padding: 20px;
     }
+    .crop-modal input, .crop-modal button , .crop-modal label {
+        font-size: 30px;
+    }
+
+    .crop-modal h3{
+        font-size: 40px;
+    }
+
+    .alerta-registrar h3{
+        font-size: 54px;
+    }
+    .alerta-registrar p{
+        font-size: 49px;
+    }
+}
     </style>
 </head>
 
@@ -1427,7 +1668,12 @@
             <button onclick="login()">Entrar</button>
             <p>Não tem uma conta? <a href="#" onclick="showRegister()">Registre-se</a></p>
         </div>
+
+        <div id="jogos-container">
+            <div id="jogos-scroll"></div>
+          </div>
     </div>
+
 
     <!-- Formulário de Registro -->
     <div id="register-container" class="content-container hidden">
@@ -1446,20 +1692,46 @@
         </div>
     </div>
 
-    <div id="crop-modal"
-        style="display: none; position: fixed; top: 0px; left: 0px; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 9999; justify-content: center; align-items: center;">
-        <div style="background: white; padding: 20px; border-radius: 10px; position: relative;">
-            <h3>Editar imagem</h3>
-            <div style="width: 300px; height: 400px; overflow: hidden; position: relative; border: 1px solid black;">
-                <img id="editable-img" src="https://upload.wikimedia.org/wikipedia/en/e/e2/NFS_High_Stakes_box.jpg"
-                    style="position: absolute; cursor: grab; width: auto; height: 100%; transform-origin: center center; transform: scale(1); left: 0px; top: 0px;">
+    
+
+    <div id="crop-modal" class="crop-modal">
+        <div class="crop-modal-content">
+            <h3>Editar Cartão</h3>
+    
+            <div class="form-group">
+                <label for="edit-name">Nome:</label>
+                <input id="edit-name" type="text" placeholder="Digite o nome do cartão" />
             </div>
-            <input id="zoom-range" type="range" min="0.3" max="2" step="0.01" value="1"
-                style="width: 100%; margin-top: 10px;">
-            <button onclick="applyCrop()">Aplicar</button>
-            <button onclick="closeModal()">Cancelar</button>
+    
+            <div class="form-group">
+                <label for="edit-comment">Comentário:</label>
+                <input id="edit-comment" type="text" placeholder="Digite um comentário" />
+            </div>
+    
+            <div class="form-group">
+                <label for="edit-image">Imagem (URL):</label>
+                <input id="edit-image" type="text" placeholder="Digite a URL da imagem" />
+            </div>
+    
+            <div class="form-group">
+                <div style="width: 300px; height: 400px; overflow: hidden; position: relative; border: 1px solid red; background: white; margin-bottom: 10px;">
+                    <img id="editable-img" src=""
+                        style="position: absolute; cursor: grab; width: auto; height: 100%; transform-origin: center center; transform: scale(1); left: 0px; top: 0px;">
+                </div>
+                <input id="zoom-range" type="range" min="0.3" max="2" step="0.01" value="1"
+                    style="width: 100%; margin-bottom: 10px;">
+            </div>
+            
+    
+            <div class="modal-actions">
+                <button class="removertrofeu" style="background: #0fe;" id="apply-all">Aplicar</button>
+                <button class="removertrofeu" onclick="closeModal()">Cancelar</button>
+            </div>
         </div>
     </div>
+    
+    
+
 
     <div class="welcome-message" id="welcome-message" style="display: none;">
         <h1>Seja muito bem-vindo(a) ao Card Flip!</h1>
@@ -1521,11 +1793,9 @@
 
             <div id="menu" class="menu">
                 <button class="BotaoDireitoMouse" id="add-card-btn" onclick="openCardInputModal()">Adicionar
-                    Carta</button>
-                <button class="BotaoDireitoMouse" onclick="editCard('name')">Editar Nome</button>
-                <button class="BotaoDireitoMouse" onclick="editCard('comment')">Editar Comentário</button>
-                <button class="BotaoDireitoMouse" onclick="editCard('image')">Editar Imagem</button>
-                <button class="BotaoDireitoMouse" onclick="editCardCrop()">Editar Crop</button>
+                    Card</button>
+                <Button class="BotaoDireitoMouse" onclick="exibirCard()">Exibir Card</Button>
+                <button class="BotaoDireitoMouse" onclick="editCard()">Editar Card</button>
                 <button class="BotaoDireitoMouse" onclick="deleteCard()">Excluir</button>
                 <button class="BotaoDireitoMouse" id="opcao1">Mover para Outra Sessão</button>
                 <button class="BotaoDireitoMouse hidden" id="opcao2">Atribuir Troféu</button>
@@ -1559,7 +1829,7 @@
             <!-- Seção do usuário -->
             <div class="user-sections-wrapper">
                 <div class="user-section1" onclick="toggleDropdown(event)">
-                    <img id="user-icon" src="..." alt="Usuário" class="user-icon">
+                    <img id="user-icon"  alt="Usuário" class="user-icon">
                     <div id="dropdownMenu" class="dropdown-content" style="display: none">
                         <button onclick="event.stopPropagation(); showSession('editlayout')">📝 Editar Layout</button>
                         <button onclick="event.stopPropagation(); confirmDeleteAccount()">🗑️Excluir Conta</button>
@@ -1662,6 +1932,10 @@
             </div>
         </div>
     </div>
+
+    <div id="cardOverlay" class="card-overlay" style="display: none;">
+
+      </div>
 
 
 </body>
@@ -1811,7 +2085,9 @@
             // Mostrar apenas o formulário de login
             document.getElementById("login-container").classList.remove("hidden");
             document.getElementById("login-container").classList.add("active");
-
+            const scroll = document.getElementById("jogos-scroll");
+            carregarVitrineJogos();
+            rolarVitrine(scroll);
             document.getElementById("register-container").classList.add("hidden");
             document.getElementById("register-container").classList.remove("active");
         }
@@ -1845,6 +2121,7 @@
 `;
         messagesDiv.appendChild(messageElement);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        
     });
 
 
@@ -1870,8 +2147,7 @@
 
 
     // ################## ROTINAS & VARIAVEIS GLOBAIS #################//
-</script>
-<script>
+
     //###############  FUNCOES ###############//
 
     function toggleSidebar() {
@@ -1880,7 +2156,6 @@
     }
     // Função para alternar entre sessões
     function showSession(session) {
-        console.log("Sessão selecionada:", session);
         const sections = ["filmes", "jogos", "livros", "animes", "kids", "series", "editlayout"];
         sections.forEach((s) => {
             const sectionContainer = document.getElementById(s);
@@ -1928,7 +2203,7 @@
 
     function submitCardInput() {
         if (!currentUser) {
-            alert("Você precisa estar logado para adicionar um cartão.");
+            msgbox("Você precisa estar logado para adicionar um cartão.");
             return;
         }
 
@@ -1947,7 +2222,7 @@
         }
 
         if (!session) {
-            alert("Nenhuma seção ativa encontrada.");
+            msgbox("Nenhuma seção ativa encontrada.");
             return;
         }
 
@@ -1963,11 +2238,10 @@
                     closeCardInputModal();
                 })
                 .catch((error) => {
-                    console.error("Erro ao adicionar cartão:", error);
-                    alert("Erro ao adicionar cartão.");
+                    msgbox("Erro ao adicionar cartão.");
                 });
         } else {
-            alert("Todos os campos são obrigatórios!");
+            msgbox("Todos os campos são obrigatórios!");
         }
     }
 
@@ -1993,65 +2267,108 @@
             const session = cardRowId.split("-")[2]; // Ex: "animes"
             const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
             if (!cardKey) {
-                alert("Erro: Não foi possível identificar o cartão.");
+                msgbox("Erro: Não foi possível identificar o cartão.");
                 return;
             }
             const ref = database.ref(`usuarios/${currentUser}/${session}/${cardKey}`);
             ref.update({ trofeu: tipo })
                 .then(() => {
-                    alert(`Troféu "${tipo}" atribuído com sucesso!`);
+                    msgbox(`Troféu "${tipo}" atribuído com sucesso!`);
                 })
                 .catch((error) => {
-                    console.error("Erro ao atribuir troféu:", error);
                 });
         }
     }
 
 
     // Função para editar um campo do cartão
-    function editCard(field) {
-        if (selectedCard) {
-            // Obter informações do cartão e do Firebase
-            const cardRowId = selectedCard.closest(".card-row").id; // Ex: "card-row-animes"
-            const session = cardRowId.split("-")[2]; // Ex: "animes"
-            const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
+    function editCard() {
+    if (!selectedCard) return;
 
-            if (!cardKey) {
-                alert("Erro: Não foi possível identificar o cartão.");
-                return;
-            }
+    const cardRowId = selectedCard.closest(".card-row").id;
+    const session = cardRowId.split("-")[2];
+    const cardKey = selectedCard.getAttribute("data-key");
 
-            const ref = database.ref(`usuarios/${currentUser}/${session}/${cardKey}`);
-
-            // Prompt para o novo valor
-            let currentValue = "";
-            if (field === "image") {
-                const imgElement = selectedCard.querySelector(`.${field}`);
-                currentValue = imgElement?.src || "";
-            } else {
-                const textElement = selectedCard.querySelector(`.${field}`);
-                currentValue = textElement?.textContent || "";
-            }
-            const newValue = prompt(`Digite o novo valor para ${field}:`, currentValue);
-
-            if (newValue) {
-                // Atualizar no Firebase
-                const updateData = { [field]: newValue };
-                ref.update(updateData).then(() => {
-                    // Atualizar na interface
-                    const elementToUpdate = selectedCard.querySelector(`.${field}`);
-                    if (field === "image") {
-                        elementToUpdate.src = newValue;
-                    } else {
-                        elementToUpdate.textContent = newValue;
-                    }
-                    alert(`${field} atualizado com sucesso!`);
-                }).catch((error) => {
-                    alert(`Erro ao atualizar ${field}: ${error.message}`);
-                });
-            }
-        }
+    if (!cardKey) {
+        msgbox("Erro: Não foi possível identificar o cartão.");
+        return;
     }
+
+    const ref = database.ref(`usuarios/${currentUser}/${session}/${cardKey}`);
+    const modal = document.getElementById('crop-modal');
+    const editable = document.getElementById('editable-img');
+    const zoomSlider = document.getElementById('zoom-range');
+
+    const nameField = selectedCard.querySelector(".name")?.textContent || "";
+    const commentField = selectedCard.querySelector(".comment")?.textContent || "";
+
+    // Pré-preenche os campos
+    document.getElementById("edit-name").value = nameField;
+    document.getElementById("edit-comment").value = commentField;
+    document.getElementById("edit-image").value = selectedImg.src;
+
+    // Crop config
+    if (!selectedImg) return;
+    editable.src = selectedImg.src;
+    editable.style.left = selectedImg.style.left || "0px";
+    editable.style.top = selectedImg.style.top || "0px";
+    zoomSlider.value = selectedImg.style.transform?.match(/scale\(([\d.]+)\)/)?.[1] || "1";
+    editable.style.transform = `scale(${zoomSlider.value})`;
+
+    posX = parseFloat(editable.style.left) || 0;
+    posY = parseFloat(editable.style.top) || 0;
+
+    modal.style.display = 'flex';
+
+    // Drag & Drop
+    editable.onmousedown = (e) => {
+        isDragging = true;
+        startX = e.clientX - posX;
+        startY = e.clientY - posY;
+        editable.style.cursor = 'grabbing';
+    };
+    document.onmouseup = () => {
+        isDragging = false;
+        editable.style.cursor = 'grab';
+    };
+    document.onmousemove = (e) => {
+        if (!isDragging) return;
+        posX = e.clientX - startX;
+        posY = e.clientY - startY;
+        editable.style.left = `${posX}px`;
+        editable.style.top = `${posY}px`;
+    };
+    zoomSlider.oninput = () => {
+        editable.style.transform = `scale(${zoomSlider.value})`;
+    };
+
+    // Aplica tudo
+    document.getElementById("apply-all").onclick = () => {
+        const updates = {
+            name: document.getElementById("edit-name").value,
+            comment: document.getElementById("edit-comment").value,
+            image: document.getElementById("edit-image").value
+        };
+
+        ref.update(updates).then(() => {
+            selectedCard.querySelector(".name").textContent = updates.name;
+            selectedCard.querySelector(".comment").textContent = updates.comment;
+            selectedCard.querySelectorAll(".front img")[0]
+
+            // Aplica posição e zoom
+            selectedImg.src = updates.image;
+            selectedImg.style.left = `${posX}px`;
+            selectedImg.style.top = `${posY}px`;
+            selectedImg.style.transform = `scale(${zoomSlider.value})`;
+            applyCrop();
+
+            msgbox("Cartão atualizado com sucesso!");
+        }).catch((err) => {
+            msgbox("Erro ao salvar: " + err.message);
+        });
+    };
+}
+
 
     function deleteCard() {
         if (selectedCard) {
@@ -2061,7 +2378,7 @@
             const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
 
             if (!cardKey) {
-                alert("Erro: Não foi possível identificar o cartão.");
+                msgbox("Erro: Não foi possível identificar o cartão.");
                 return;
             }
 
@@ -2072,10 +2389,10 @@
                 ref.remove()
                     .then(() => {
                         selectedCard.remove(); // Remover da interface
-                        alert("Cartão excluído com sucesso!");
+                        msgbox("Cartão excluído com sucesso!");
                     })
                     .catch((error) => {
-                        alert(`Erro ao excluir cartão: ${error.message}`);
+                        msgbox(`Erro ao excluir cartão: ${error.message}`);
                     });
             }
         }
@@ -2169,7 +2486,7 @@
 
     function moveCard(newSession) {
         if (!selectedCard) {
-            alert("Nenhum cartão selecionado.");
+            msgbox("Nenhum cartão selecionado.");
             return;
         }
 
@@ -2179,12 +2496,12 @@
         const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
 
         if (!cardKey) {
-            alert("Erro: Não foi possível identificar o cartão.");
+            msgbox("Erro: Não foi possível identificar o cartão.");
             return;
         }
 
         if (!newSession || !["filmes", "jogos", "livros", "animes", "kids", "series", "editlayout"].includes(newSession)) {
-            alert("Sessão inválida.");
+            msgbox("Sessão inválida.");
             return;
         }
 
@@ -2201,17 +2518,17 @@
                         currentRef.remove() // Remover o cartão da sessão atual
                             .then(() => {
                                 selectedCard.remove(); // Remover da interface
-                                alert("Cartão movido com sucesso!");
+                                msgbox("Cartão movido com sucesso!");
                             })
                             .catch((error) => {
-                                console.error("Erro ao remover o cartão da sessão atual:", error);
+
                             });
                     })
                     .catch((error) => {
-                        console.error("Erro ao mover o cartão para a nova sessão:", error);
+
                     });
             } else {
-                alert("Erro: Não foi possível encontrar os dados do cartão.");
+                msgbox("Erro: Não foi possível encontrar os dados do cartão.");
             }
         });
     }
@@ -2244,22 +2561,22 @@
         const password = document.getElementById("register-password").value;
 
         if (!username || !password) {
-            alert("Preencha todos os campos!");
+            msgbox("Preencha todos os campos!");
             return;
         }
 
         const ref = database.ref(`usuarios/${username}`);
         ref.once("value", (snapshot) => {
             if (snapshot.exists()) {
-                alert("Usuário já existe!");
+                msgbox("Usuário já existe!");
             } else {
                 ref.set({ senha: password })
                     .then(() => {
-                        alert("Usuário registrado com sucesso!");
+                        msgbox("Usuário registrado com sucesso!");
                         showLogin();
                     })
                     .catch((error) => {
-                        alert(`Erro ao registrar: ${error.message}`);
+                        msgbox(`Erro ao registrar: ${error.message}`);
                     });
             }
         });
@@ -2267,7 +2584,6 @@
 
     function loadCards(session) {
         if (!currentUser) {
-            console.error("Nenhum usuário está logado.");
             return;
         }
 
@@ -2277,7 +2593,6 @@
             const cardRow = document.getElementById(`card-row-${session}`);
 
             if (!cardRow) {
-                console.warn(`Elemento com ID card-row-${session} não encontrado.`);
                 return;
             }
 
@@ -2288,17 +2603,15 @@
                     cardRow.appendChild(createCard(cardData, key));
                 });
             } else {
-                console.log(`Nenhum cartão encontrado para a sessão: ${session}`);
             }
         }).catch((error) => {
-            console.error(`Erro ao carregar cartões da sessão ${session}:`, error);
         });
     }
 
 
     function moveCard() {
         if (!selectedCard) {
-            alert("Nenhum cartão selecionado.");
+            msgbox("Nenhum cartão selecionado.");
             return;
         }
 
@@ -2308,7 +2621,7 @@
         const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
 
         if (!cardKey) {
-            alert("Erro: Não foi possível identificar o cartão.");
+            msgbox("Erro: Não foi possível identificar o cartão.");
             return;
         }
 
@@ -2325,24 +2638,24 @@
                         currentRef.remove() // Remover o cartão da sessão atual
                             .then(() => {
                                 selectedCard.remove(); // Remover da interface
-                                alert("Cartão movido com sucesso!");
+                                msgbox("Cartão movido com sucesso!");
                             })
                             .catch((error) => {
-                                console.error("Erro ao remover o cartão da sessão atual:", error);
+
                             });
                     })
                     .catch((error) => {
-                        console.error("Erro ao mover o cartão para a nova sessão:", error);
+
                     });
             } else {
-                alert("Erro: Não foi possível encontrar os dados do cartão.");
+
             }
         });
     }
 
     function moveCardTo(newSession) {
         if (!selectedCard) {
-            alert("Nenhum cartão selecionado.");
+            msgbox("Nenhum cartão selecionado.");
             return;
         }
 
@@ -2352,7 +2665,7 @@
         const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
 
         if (!cardKey) {
-            alert("Erro: Não foi possível identificar o cartão.");
+            msgbox("Erro: Não foi possível identificar o cartão.");
             return;
         }
 
@@ -2369,17 +2682,17 @@
                         currentRef.remove() // Remover o cartão da sessão atual
                             .then(() => {
                                 selectedCard.remove(); // Remover da interface
-                                alert(`Cartão movido para ${newSession} com sucesso!`);
+                                msgbox(`Cartão movido para ${newSession} com sucesso!`);
                             })
                             .catch((error) => {
-                                console.error("Erro ao remover o cartão da sessão atual:", error);
+
                             });
                     })
                     .catch((error) => {
-                        console.error("Erro ao mover o cartão para a nova sessão:", error);
+
                     });
             } else {
-                alert("Erro: Não foi possível encontrar os dados do cartão.");
+
             }
         });
     }
@@ -2390,20 +2703,20 @@
         const password = document.getElementById("login-password").value;
 
         if (!username || !password) {
-            alert("Preencha todos os campos!");
+            msgbox("Preencha todos os campos!");
             return;
         }
 
         const ref = database.ref(`usuarios/${username}`);
         ref.once("value", (snapshot) => {
             if (snapshot.exists() && snapshot.val().senha === password) {
-                alert("Login realizado com sucesso!");
+                msgbox("Login realizado com sucesso!");
                 currentUser = username;
 
                 // Salvar o usuário no Local Storage
                 localStorage.setItem("currentUser", currentUser);
 
-                console.log("boasvindas", ref.welcome?.boasvindas);
+
                 const usuarioRef = database.ref(`usuarios/${currentUser}/welcome/boasvindas`);
                 usuarioRef.once("value").then((snapshot) => {
                     const boasVindas = snapshot.val();
@@ -2437,7 +2750,7 @@
                 contarTrofeus(username);
 
             } else {
-                alert("Usuário ou senha incorretos!");
+                msgbox("Usuário ou senha incorretos!");
             }
         });
     }
@@ -2483,23 +2796,20 @@
             color2: color2 || null,
         })
             .then(() => {
-                alert("Imagem de fundo, segunda imagem e estilo dos botões salvos com sucesso!");
+                msgbox("Imagem de fundo, segunda imagem e estilo dos botões salvos com sucesso!");
             })
             .catch((error) => {
-                console.error("Erro ao salvar os dados:", error);
-                alert("Erro ao salvar os dados.");
+
+                msgbox("Erro ao salvar os dados.");
             });
     }
 
     // Carregar a imagem de fundo ao iniciar
-    function loadBackground(usuarioprocurado) {
+    function loadBackground() {
         if (!currentUser) return;
 
         let ref = database.ref(`usuarios/${currentUser}/background`);
-        if (usuarioprocurado != null) {
-            ref = database.ref(`usuarios/${usuarioprocurado}/background`);
-            console.log("Carregando dados de outro usuário:", usuarioprocurado);
-        }
+        
 
         ref.once("value", (snapshot) => {
             const data = snapshot.val();
@@ -2586,17 +2896,12 @@
             applyLayoutCrop(data);
 
         }).catch((error) => {
-            console.error("Erro ao carregar os dados:", error);
+
         });
     }
 
     // Chamar a função para carregar a imagem de fundo ao carregar a página
     document.addEventListener("DOMContentLoaded", loadBackground);
-
-// Tornar automático com eventos
-["background-url", "user-icon-url", "background-color1", "background-color2"].forEach(id => {
-    document.getElementById(id).addEventListener("input", previewBackground);
-});
 
 
     // Salvar a cor de fundo no Firebase
@@ -2644,9 +2949,9 @@
 
         const ref = database.ref(`usuarios/${currentUser}/background`);
         ref.set(data).then(() => {
-            alert("Layout salvo com sucesso!");
+            msgbox("Layout salvo com sucesso!");
         }).catch((error) => {
-            console.error("Erro ao salvar:", error);
+
         });
     }
 
@@ -2680,7 +2985,7 @@
                 zoom: zoom
             }
         }).then(() => {
-            console.log("Crop salvo no Firebase!");
+
         });
 
         closeModal();
@@ -2744,12 +3049,13 @@
             bgImg.style.transform = data.backgroundImg.zoom || "scale(1)";
         }
 
+        try{
         if (data.userIcon) {
-            iconImg.src = data.userIcon.url || "";
-            iconImg.style.left = data.userIcon.left || "0px";
-            iconImg.style.top = data.userIcon.top || "0px";
-            iconImg.style.transform = data.userIcon.zoom || "scale(1)";
+            iconImg.src = data.userIcon.url || "x";
         }
+    } catch{
+
+    }
     }
 
 
@@ -2776,10 +3082,10 @@
 
         firebase.database().ref(`usuarios/${currentUser}/editlayout`).set(cropData.editlayout)
             .then(() => {
-                console.log("Layout crop salvo com sucesso!");
+
             })
             .catch((error) => {
-                console.error("Erro ao salvar layout crop:", error);
+
             });
     }
 
@@ -2832,9 +3138,11 @@
 
     const inputUrl = document.getElementById("icon-Url");
     const editIconImg = document.getElementById("editicon-child");
+    const usersection1 = document.getElementById("user-section1")
 
     inputUrl.addEventListener("input", function () {
         editIconImg.src = this.value;
+        usersection1.src = this.value;
     });
 
     function applyUserDisplayStyle() {
@@ -2884,11 +3192,9 @@
 
         database.ref("usuarios").once("value", (snapshot) => {
             const users = snapshot.val();
-            console.log("🔥 Usuarios encontrados:", users);
+
 
             for (const user in users) {
-
-                console.log("👉 Adicionando usuário à lista:", user); // debug
 
                 // Recuperar as cores e imagem do usuário
                 const color1 = users[user]?.background?.userNameStyle?.color1 || "#ffffff";
@@ -2972,7 +3278,6 @@
 
     function loadBackgrounduser(usuarioprocurado) {
         const ref = database.ref(`usuarios/${usuarioprocurado}/background`);
-        console.log("Carregando dados de outro usuário:", usuarioprocurado);
 
         ref.once("value", (snapshot) => {
             const data = snapshot.val();
@@ -3029,14 +3334,14 @@
             // Apply layout cropping
             applyLayoutCrop(data || {});
         }).catch((error) => {
-            console.error("Erro ao carregar os dados:", error);
+
         });
     }
 
 
 
     function copyCardToMyProfile() {
-        if (!currentUser || !selectedCard) return alert("Você precisa estar logado.");
+        if (!currentUser || !selectedCard) return msgbox("Você precisa estar logado.");
 
         const cardRowId = selectedCard.closest(".card-row").id; // card-row-filmes
         const session = cardRowId.split("-")[2];
@@ -3044,7 +3349,7 @@
         const userOrigin = document.getElementById("user-display").textContent; // Nome do usuário visualizado
 
         if (!userOrigin || !session || !cardKey) {
-            alert("Erro: dados incompletos para copiar.");
+            msgbox("Erro: dados incompletos para copiar.");
             return;
         }
 
@@ -3059,26 +3364,24 @@
                 throw new Error("Card não encontrado.");
             }
         }).then(() => {
-            alert("Card copiado com sucesso!");
+            msgbox("Card copiado com sucesso!");
             loadCards(session);
         }).catch((error) => {
-            console.error("Erro ao copiar card:", error);
-            alert("Erro ao copiar o card.");
+
+            msgbox("Erro ao copiar o card.");
         });
     }
 
     // Função para contar os troféus
     function contarTrofeus(usuarioprocurado) {
         let ouro = 0, prata = 0, bronze = 0;
-        console.log("usuarioprocurado:", usuarioprocurado);
-        console.log("currentUser:", currentUser); // debug
+
         // Verificar se usuarioprocurado é uma string válida
         if (typeof usuarioprocurado !== 'string' || usuarioprocurado.trim() === '') {
             usuarioprocurado = currentUser;
         }
         // Referência ao Firebase para os cartões do usuário
         let ref = database.ref(`usuarios/${usuarioprocurado}`);
-        console.log("Carregando dados de usuário:", usuarioprocurado);
         ref.once("value", (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -3112,13 +3415,13 @@
             const session = cardRowId.split("-")[2]; // Ex: "animes"
             const cardKey = selectedCard.getAttribute("data-key"); // A chave do Firebase
             if (!cardKey) {
-                alert("Erro: Não foi possível identificar o cartão.");
+                msgbox("Erro: Não foi possível identificar o cartão.");
                 return;
             }
             const ref = database.ref(`usuarios/${currentUser}/${session}/${cardKey}`);
             ref.update({ trofeu: null })
                 .then(() => {
-                    alert("Troféu removido com sucesso!");
+                    msgbox("Troféu removido com sucesso!");
                     // Atualizar a interface
                     const trofeuImg = selectedCard.querySelector(".front img[src*='trofeus']");
                     if (trofeuImg) {
@@ -3126,7 +3429,7 @@
                     }
                 })
                 .catch((error) => {
-                    console.error("Erro ao remover troféu:", error);
+
                 });
         }
     }
@@ -3191,6 +3494,7 @@
         firebase.database().ref("messages/" + formattedDate).set(message);
 
         input.value = "";
+        scrollToBottom();
     }
 
 
@@ -3217,7 +3521,6 @@
 
                 // Compara com 24h atrás
                 if (messageDate < now) {
-                    console.log("Removendo:", key);
                     firebase.database().ref("messages/" + key).remove();
                 }
             });
@@ -3284,9 +3587,11 @@
     document.addEventListener('click', function (event) {
         const submenu = document.getElementById('trofeu-submenu');
         const context = document.getElementById('context-menu');
+        try{
         if (!submenu.contains(event.target) && !context.contains(event.target)) {
             submenu.style.display = 'none';
         }
+    }catch{}
     });
 
     
@@ -3303,6 +3608,313 @@ document.addEventListener('click', function (e) {
     menu.style.display = 'none';
   }
 });
+
+// Função para exibir uma mensagem temporária
+function msgbox(msg) {
+  const mensagem = document.createElement('div');
+  mensagem.innerText = msg;
+  mensagem.style.position = 'fixed';
+  mensagem.style.top = '20px';
+  mensagem.style.left = '50%';
+  mensagem.style.transform = 'translateX(-50%)';
+  mensagem.style.backgroundColor = '#f8d7da';
+  mensagem.style.color = '#721c24';
+  mensagem.style.padding = '10px';
+  mensagem.style.borderRadius = '5px';
+  mensagem.style.zIndex = '9999';
+  mensagem.style.fontSize = '16px';
+  
+  document.body.appendChild(mensagem);
+
+  // Esconde a mensagem após 3 segundos
+  setTimeout(() => {
+    mensagem.remove();
+  }, 3000); // 3000ms = 3 segundos
+}
+
+document.getElementById("edit-image").addEventListener("input", function () {
+    const newUrl = this.value;
+    document.getElementById("editable-img").src = newUrl;
+});
+
+function exibirCard() {
+    if (!selectedCard) {
+        msgbox("Selecione uma carta primeiro!");
+        return;
+    }
+
+    const data = {
+        name: selectedCard.querySelector(".name")?.textContent,
+        comment: selectedCard.querySelector(".comment")?.textContent,
+        image: selectedCard.querySelector(".front img")?.src,
+        crop: {
+            left: selectedCard.querySelector(".front img")?.style.left,
+            top: selectedCard.querySelector(".front img")?.style.top,
+            zoom: parseFloat(selectedCard.querySelector(".front img")?.style.transform?.match(/scale\(([\d.]+)\)/)?.[1]) || 1
+        },
+        trofeu: detectaTrofeu(selectedCard.querySelector(".front"))
+    };
+
+    // Limpa o conteúdo antigo do overlay
+    const overlay = document.getElementById("cardOverlay");
+    overlay.innerHTML = "";
+
+    const cardGrande = createCard(data, "preview");
+    cardGrande.classList.add("card-preview");
+
+    // Duplicar os valores de left e top
+    const img = cardGrande.querySelector(".front img");
+    const currentLeft = parseFloat(selectedCard.querySelector(".front img")?.style.left || 0);
+    const currentTop = parseFloat(selectedCard.querySelector(".front img")?.style.top || 0);
+
+    img.style.left = `${currentLeft * 2}px`; // Duplicar o valor de left
+    img.style.top = `${currentTop * 2}px`;   // Duplicar o valor de top
+        // 🔴 Adiciona o botão "X"
+// Cria um container para os botões
+const buttonContainer = document.createElement("div");
+buttonContainer.style.position = "absolute";
+buttonContainer.style.top = "10%";
+buttonContainer.style.left = "10%";
+buttonContainer.style.transform = "translateX(-50%)"; // Centraliza horizontalmente
+buttonContainer.style.display = "flex";
+buttonContainer.style.gap = "20px"; // Espaço entre os botões
+buttonContainer.style.zIndex = "9999";
+
+// 🔴 Botão de fechar (X)
+const closeButton = document.createElement("div");
+closeButton.style.width = "48px";
+closeButton.style.height = "48px";
+closeButton.style.cursor = "pointer";
+
+const closeImg = document.createElement("img");
+closeImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABP0lEQVR4nO2Yy07DMBBF8yksiHiIHbXdXYUd+P8/YAGitN30xkEsQZaChAKJnHTsTKq5Uraec2QnnkxRSCQSiUQSmdrqW1SmLBLluFlfhhpJFq+f7q+91W/e6W1dmRvq9VGZ0jv12li184+ruyTwjdNf4aGWwA98uz6pRBeeWgJdeGqJz4258E49/ylAIIE+eOpdTiGRDT6FRHZ4SonZ4CkkZoc/RYIN/BQJdvBjJNjCx0g0Tu8bp97ZwkdK8IYfK8ES/rdE3XPeW/gDW/iQ8MJ+WL0d2AG+Ahj42rA/QoiEZymBIXir9wGWrQQiLqnwn+udemEngRE3LDsJTGgP2EjghN5mdgkQNGatRP7mDoRdZfYOFQkKZpNAwkLIIYGH1dWiB1v/SSxqtNiVWORwN9d4HZUpk43XJRKJRHKW+QaUqwzfL9sYYwAAAABJRU5ErkJggg=="
+closeImg.alt = "Fechar";
+closeImg.style.width = "100%";
+closeImg.style.height = "100%";
+closeImg.style.objectFit = "contain";
+
+closeButton.appendChild(closeImg);
+closeButton.onclick = () => overlay.style.display = "none";
+
+// 🔁 Botão de reset
+const resetButton = document.createElement("div");
+resetButton.style.width = "48px";
+resetButton.style.height = "48px";
+resetButton.style.cursor = "pointer";
+
+const resetImg = document.createElement("img");
+resetImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAD7ElEQVR4nO1ZW4scVRA+knhJBMWoiIqoD4loUNB4xQ2zVT277EMEfRjwQSOaiwYSiK6Qma5q2kdF8yZCwAvx8jJodqaqd00QzA9wNQhRH3xJJPECmiisMRo1clo39J7u7PbsTLc7MB/0w8B0dZ061V9952tjBhhggK4RHqwsJ6kOsWBIChOs+BULniDBMywww4JHSHCaBPey4GZuwS1mKYDaIzezwm5W+J4Vz3Z0CR4KBJ8Jp8YuKz3xRhuvIcE3WPCPjhNPLQR+9hV32l0sJXlS7wlSPNl14s5FioeDaPi+whIPm7WLSOGteVrC9vxeu0Bf8K76Pu/KWrO2bPzAyKUUwY2B4nqOcBcpTJ135wROk8CTPU/eJsGKB85XOY7wsR1TYxfnjed/uP5aFiRW+DEzpsCLPa18ZvICM4HidlvlRcfeP7qKBV8jhb8ydpR6soD4ZU1VCb7hlndnTx5gjPEFHyKBXzKe89Sc/yneywqvdpA8PJ4R9FPbAqbHaLTwNlL4YW57wq+s1dUcVW9lwSYL/s2KL+cKaF/CVI8KfusrXt/r5GfRaOMdLsNRPGPgz9nfgQxXTB6Q4B6n+qf8VuVuUzBY8OH5mC7XvKCJ0RtI4XeHGepFJx/uH11FCi+wZtMsKb6XKxALvOQwzrFQNqwsKvFxS9PxjFhwQD66YDBLizZhpw+3mAIRKG4nhePzTmrBM/Vo6IqFg4n3gKtVnm3ev8IUjFqztowir0oK+h/buMPt41yBSNF3FvCuKRms1dV2GidZkMR7Lt/NAvvmrLyNm8z/hFA2rLTDjAU/qU96a3LdFGubxAIC8e4x/QQS+Cm5gFAqV5l+Ajn8b8Wc6SdQ3y9A+r6FcM5LbCWs6SeQ4AeOgNps+gnkDLLcAmqpIHCkhD0pFSnkeo5MMSf4tCkZFEsJfD9o44g5ay7o6GZXTlulWOYuNKxxFh8nz7Xx19yGtbkDZB5oFH1TEljxTYdIjnQ8j9wjJQn+VoYu8hUfcaV0EMHWjgM1poaudodafDJrVa8rrPKT1dtTz1T4fNFqwDpu6XMpfFbEIuqT3hoS/M4p2GnrVHQVmBVeT7sDcCyIYF2vkqfIG0tXPlYBO7sOvnV63YVZ1qJliW5t8V0fVS8ngVeSvk+idXabMszd+GuMwsbwYOWSDt+v510nLkEYezrm/lz2eqZPeo5mT5LAO9YetwaYVbF295L2uk2aFcSlaE44D6w4boqErbZ1yOazQBZzkcJRagOaPvzENMMKQRnWTQrhROUm+7Kl6C9PxQW+tFbJkjgwWQEYtIcftJX815aBL5KfWeP2EJxmxbdJYVvX3D7AAAOYWfwDYkzaeCRTX3IAAAAASUVORK5CYII="; // troque pelo seu caminho
+resetImg.alt = "Resetar";
+resetImg.style.width = "100%";
+resetImg.style.height = "100%";
+resetImg.style.objectFit = "contain";
+
+resetButton.appendChild(resetImg);
+resetButton.onclick = () => {
+    const card = cardGrande.querySelector(".card");
+    card.style.transform = "rotateY(0deg)";
+};
+
+// Adiciona os dois botões ao container
+buttonContainer.appendChild(closeButton);
+buttonContainer.appendChild(resetButton);
+
+// Adiciona o container ao overlay
+overlay.appendChild(buttonContainer);
+
+    // Exibe
+    overlay.appendChild(cardGrande);
+    overlay.style.display = "flex";
+
+    // Resetar rotação
+    cardGrande.querySelector(".card").style.transform = "rotateY(0deg)";
+    addRotacaoCard(cardGrande.querySelector(".card"));
+}
+
+
+function detectaTrofeu(frontEl) {
+    const trofeu = frontEl.querySelector("img[alt*=trophy]");
+    if (!trofeu) return null;
+
+    if (trofeu.src.includes("ouro")) return "platina";
+    if (trofeu.src.includes("prata")) return "zerado";
+    if (trofeu.src.includes("bronze")) return "jogado";
+
+    return null;
+}
+
+
+
+
+// Interação para girar com o mouse
+
+let currentRotationY = 0;
+
+const card = document.getElementById("card3D");
+
+card.addEventListener("mousedown", (e) => {
+  isDragging = true;
+  startX = e.clientX;
+  card.style.cursor = "grabbing";
+});
+
+document.addEventListener("mouseup", () => {
+  isDragging = false;
+  card.style.cursor = "grab";
+});
+
+document.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
+  const deltaX = e.clientX - startX;
+  currentRotationY += deltaX * 0.5;
+  card.style.transform = `rotateY(${currentRotationY}deg)`;
+  startX = e.clientX;
+});
+
+
+function addRotacaoCard(cardEl) {
+    let isDragging = false;
+    let startX = 0;
+    let currentRotationY = 0;
+
+    const updateRotation = (deltaX) => {
+        currentRotationY += deltaX * 0.3;
+        cardEl.style.transform = `rotateY(${currentRotationY}deg)`;
+    };
+
+    // Desktop
+    cardEl.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        cardEl.style.cursor = 'grabbing';
+        e.preventDefault(); // impede seleção de texto
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+        cardEl.style.cursor = 'grab';
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+        const deltaX = e.clientX - startX;
+        updateRotation(deltaX);
+        startX = e.clientX;
+    });
+
+    // Mobile
+    cardEl.addEventListener("touchstart", (e) => {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+    }, { passive: false });
+
+    cardEl.addEventListener("touchend", () => {
+        isDragging = false;
+    });
+
+    cardEl.addEventListener("touchmove", (e) => {
+        if (!isDragging) return;
+        const deltaX = e.touches[0].clientX - startX;
+        updateRotation(deltaX);
+        startX = e.touches[0].clientX;
+        e.preventDefault(); // impede rolagem da página durante rotação
+    }, { passive: false });
+}
+
+function carregarVitrineJogos() {
+      console.time('carregarVitrineJogos');  // Começa o tempo de execução da função
+
+      const scroll = document.getElementById("jogos-scroll");
+      let jogos = [];
+      let index = 0;
+
+      console.log("Iniciando leitura do banco de dados...");
+      const startDatabaseRead = Date.now();  // Marca o tempo de início da leitura do Firebase
+
+      database.ref("usuarios").once("value", snapshot => {
+        console.log(`Leitura do banco de dados concluída em ${Date.now() - startDatabaseRead}ms`);
+        
+        snapshot.forEach(userSnap => {
+          const username = userSnap.key;
+          const userJogos = userSnap.val().jogos || {};
+
+          Object.values(userJogos).forEach(jogo => {
+            jogos.push({ name: jogo.name, image: jogo.image, username: username });
+          });
+        });
+
+        carregarItem(jogos, index, scroll);
+        console.timeEnd('carregarVitrineJogos');  // Fim do tempo de execução da função
+      });
+
+      function carregarItem(jogos, index, scroll) {
+        if (index < jogos.length) {
+          const jogo = jogos[index];
+          const div = document.createElement("div");
+          div.className = "jogo-item";
+
+          // Criar a estrutura de conteúdo antes da imagem
+          const content = document.createElement("div");
+          content.innerHTML = `<strong>${jogo.name}</strong><br><small>${jogo.username}</small>`;
+          div.appendChild(content);
+
+          const img = new Image();
+          img.src = jogo.image;
+          img.alt = jogo.name;
+
+          img.onload = function() {
+            div.insertBefore(img, content);  // Adiciona a imagem quando carregada
+            scroll.appendChild(div);
+
+            // A animação de "fade in" ao adicionar um item
+            setTimeout(() => {
+              div.style.opacity = 1;
+              div.style.transform = "translateY(0)";
+            }, 100);
+
+            // Carregar o próximo item após uma breve pausa
+            setTimeout(() => carregarItem(jogos, index + 1, scroll), 300);  // Espera 300ms antes de carregar o próximo item
+          };
+
+          img.style.width = "100%";
+          img.style.maxWidth = "120px";
+          img.style.height = "120px";
+          img.style.objectFit = "cover";
+          img.style.borderRadius = "8px";
+          img.style.marginBottom = "8px";
+        }
+      }
+    }
+
+    
+    async function rolarVitrine(scroll) {
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Detecta se é uma tela de celular (ex: menos de 768px de largura)
+  const isMobile = window.innerWidth <= 980;
+
+  // Define tempos diferentes
+  const delay = isMobile ? 12000 : 6000;
+
+  await sleep(delay);
+
+  setInterval(() => {
+    const scrollHeight = scroll.scrollHeight;
+    const clientHeight = scroll.clientHeight;
+    const scrollTop = scroll.scrollTop;
+
+    if (scrollTop + clientHeight >= scrollHeight) {
+      scroll.scrollTop = 0;
+    } else {
+      scroll.scrollTop += 1;
+    }
+  }, 20);
+}
+
+
+
 
 </script>
 
