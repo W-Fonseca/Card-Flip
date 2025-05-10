@@ -633,7 +633,7 @@
             height: auto;
             object-fit: contain;
             flex-shrink: 0;
-            border-radius: 50%;
+            border-radius: 10px;
         }
 
         #user-display {
@@ -1394,7 +1394,7 @@
       z-index: 1;
     }
 
-    #jogos-scroll {
+    #jogos-scroll, #jogos-scroll2 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
@@ -1404,14 +1404,16 @@
       overflow-y: auto;
     }
 
-    #jogos-scroll {
+    #jogos-scroll, #jogos-scroll2 {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* Internet Explorer 10+ */
 }
 
-#jogos-scroll::-webkit-scrollbar {
+#jogos-scroll::-webkit-scrollbar, #jogos-scroll2::-webkit-scrollbar {
   display: none; /* Chrome, Safari e Edge */
 }
+
+
 
     .jogo-item {
       display: flex;
@@ -1449,10 +1451,53 @@
       }
     }
 
+#card-search {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 1rem;
+  background-color: #013a5e59;
+  color: white;
+  width: 80%; /* deixa espaço para o botão */
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  z-index: 3;
+}
+
+#expandir_pesquisa {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 60px;
+  padding: 8px;
+  font-size: 1rem;
+  background-color: #009dff1f;
+  color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 3;
+}
+
+#expandir_pesquisa:hover,
+#card-search:hover {
+  background-color: #009dff34;
+}
+
+
+
+.navigation a.active {
+    
+    color: #0ff;
+
+}
+
+
     </style>
 
     <style>
         @media (max-width: 980px) {
+
             .user-sections-wrapper {
                 grid-template-columns: 1fr;
                 /* Apenas uma coluna */
@@ -1653,6 +1698,14 @@
     .alerta-registrar p{
         font-size: 49px;
     }
+
+    #cardOverlay .card .back .name {
+    font-size: clamp(1rem, 5vw, 2rem); /* Tamanho dinâmico com base na tela */
+}
+
+#cardOverlay .card .back .comment {
+    font-size: clamp(1.0rem, 5vw, 2.0rem); /* Também ajusta dinamicamente */
+}
 }
     </style>
 </head>
@@ -1687,9 +1740,12 @@
         <div class="alerta-registrar">
             <h1>Alerta!</h1>
             <p>
-                Não cadastre uma senha conhecida, não temos resposabilidade por vazamentos de senhas!
+                Não cadastre uma senha conhecida, não nos resposabilizamos por vazamentos de senhas!
             </p>
         </div>
+        <div id="jogos-container">
+            <div id="jogos-scroll2"></div>
+          </div>
     </div>
 
     
@@ -1760,6 +1816,10 @@
         </div>
         <div class="content">
             <img id="background-image" src="">
+            <div class="pesquisa">
+            <input type="text" id="card-search" placeholder="Buscar cards..." oninput="filtrarCards()">
+    <button id="expandir_pesquisa" onclick="expandir_pesquisa()">>></button>
+            </div>
             <div id="filmes" class="content-container hidden">
                 <div class="card-row" id="card-row-filmes">
                     <!-- Cartas de filmes vão aqui -->
@@ -2086,8 +2146,10 @@
             document.getElementById("login-container").classList.remove("hidden");
             document.getElementById("login-container").classList.add("active");
             const scroll = document.getElementById("jogos-scroll");
+            const scroll2 = document.getElementById("jogos-scroll2");
             carregarVitrineJogos();
             rolarVitrine(scroll);
+            rolarVitrine(scroll2);
             document.getElementById("register-container").classList.add("hidden");
             document.getElementById("register-container").classList.remove("active");
         }
@@ -2156,33 +2218,49 @@
     }
     // Função para alternar entre sessões
     function showSession(session) {
-        const sections = ["filmes", "jogos", "livros", "animes", "kids", "series", "editlayout"];
-        sections.forEach((s) => {
-            const sectionContainer = document.getElementById(s);
-            if (sectionContainer) {
-                if (s === session) {
-                    sectionContainer.classList.add("active");
-                    sectionContainer.classList.remove("hidden");
-                } else {
-                    sectionContainer.classList.remove("active");
-                    sectionContainer.classList.add("hidden");
-                }
-            }
-        });
-        // Verificar se está na sessão de jogos
-        const controfeus = document.getElementsByClassName("cont-trofeu");
-        if (session === "jogos") {
-            for (let i = 0; i < controfeus.length; i++) {
-                controfeus[i].classList.remove("hidden");
-            }
-            document.getElementById("opcao2").classList.remove("hidden")
-        } else {
-            for (let i = 0; i < controfeus.length; i++) {
-                controfeus[i].classList.add("hidden");
-            }
-            document.getElementById("opcao2").classList.add("hidden")
-        }
+    const sections = ["filmes", "jogos", "livros", "animes", "kids", "series", "editlayout"];
+    
+    // Remover classe 'active' de todos os links
+    const navLinks = document.querySelectorAll("#navbar a");
+    navLinks.forEach(link => link.classList.remove("active"));
+
+    // Adicionar classe 'active' ao link correspondente
+    const selectedLink = Array.from(navLinks).find(link =>
+        link.getAttribute("onclick").includes(session)
+    );
+    if (selectedLink) {
+        selectedLink.classList.add("active");
     }
+
+    // Mostrar/ocultar seções
+    sections.forEach((s) => {
+        const sectionContainer = document.getElementById(s);
+        if (sectionContainer) {
+            if (s === session) {
+                sectionContainer.classList.add("active");
+                sectionContainer.classList.remove("hidden");
+            } else {
+                sectionContainer.classList.remove("active");
+                sectionContainer.classList.add("hidden");
+            }
+        }
+    });
+
+    // Específico para 'jogos'
+    const controfeus = document.getElementsByClassName("cont-trofeu");
+    if (session === "jogos") {
+        for (let i = 0; i < controfeus.length; i++) {
+            controfeus[i].classList.remove("hidden");
+        }
+        document.getElementById("opcao2").classList.remove("hidden");
+    } else {
+        for (let i = 0; i < controfeus.length; i++) {
+            controfeus[i].classList.add("hidden");
+        }
+        document.getElementById("opcao2").classList.add("hidden");
+    }
+}
+
 
     function close_editlayout() {
             document.getElementById("editlayout").classList.remove("active");
@@ -3825,6 +3903,7 @@ function carregarVitrineJogos() {
       console.time('carregarVitrineJogos');  // Começa o tempo de execução da função
 
       const scroll = document.getElementById("jogos-scroll");
+      const scroll2 = document.getElementById("jogos-scroll2");
       let jogos = [];
       let index = 0;
 
@@ -3844,6 +3923,7 @@ function carregarVitrineJogos() {
         });
 
         carregarItem(jogos, index, scroll);
+        carregarItem(jogos, index, scroll2);
         console.timeEnd('carregarVitrineJogos');  // Fim do tempo de execução da função
       });
 
@@ -3913,7 +3993,46 @@ function carregarVitrineJogos() {
   }, 20);
 }
 
+function filtrarCards() {
+    const input = document.getElementById("card-search");
+    const termo = input.value.toLowerCase().trim();
 
+    const abas = ['filmes', 'jogos', 'livros', 'animes', 'kids', 'series'];
+    let abaAtiva = abas.find(id => {
+      const el = document.getElementById(id);
+      return el && !el.classList.contains('hidden');
+    });
+
+    if (!abaAtiva) return;
+
+    const cards = document.querySelectorAll(`#${abaAtiva} .card-container`);
+
+    cards.forEach(container => {
+      const nome = container.querySelector('.name')?.innerText?.toLowerCase() || '';
+      const comentario = container.querySelector('.comment')?.innerText?.toLowerCase() || '';
+
+      if (nome.includes(termo) || comentario.includes(termo)) {
+        container.style.display = 'flex';
+      } else {
+        container.style.display = 'none';
+      }
+    });
+  }
+
+  function expandir_pesquisa() {
+    const search = document.getElementById("card-search");
+    const botao = document.getElementById("expandir_pesquisa");
+
+    if (search.classList.contains('hidden')) {
+        search.classList.remove('hidden');
+        search.classList.add('active');
+        botao.textContent = ">>";
+    } else {
+        search.classList.add('hidden');
+        search.classList.remove('active');
+        botao.textContent = "<<";
+    }
+}
 
 
 </script>
