@@ -59,9 +59,8 @@ Este projeto utiliza a seguinte instância Firebase:
 ## 🧠 Ideias Futuras
 
 - Sistema de login com autenticação segura via Firebase Auth
-- Upload direto de imagens (sem precisar de URL)
-- Compartilhamento de cards entre usuários
-- Sistema de comentários e curtidas 
+- Compartilhamento de cards entre usuários ✔️
+- Sistema de comentários e curtidas ✔️
 
 ## 📄 Licença
 
