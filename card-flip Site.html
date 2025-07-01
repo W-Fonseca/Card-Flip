@@ -14,7 +14,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', Arial, sans-serif;
             overflow-x: hidden;
             /* 👈 força a remoção da barra de rolagem horizontal */
             overflow-y: hidden;
@@ -111,6 +111,7 @@
             align-items: center;
             transition: all 1.5s ease;
             overflow: hidden;
+            background: #00223885;
             /* Impede o #background-image de ultrapassar a borda */
             position: relative;
             border-radius: 5px;
@@ -146,7 +147,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;      /* Alinha os itens na vertical */
+            flex-direction: column;
+            /* Alinha os itens na vertical */
             overflow: hidden;
             box-sizing: border-box;
             /* opcional para espaçamento */
@@ -400,6 +402,11 @@
         /* ################ FIM LOGIN E REGISTRO #######################*/
         /* ################ CARD ######################### */
         .card-row {
+            max-height: 85vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 10px;
+            /* opcional: ajuda a visualizar o scroll */
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -625,18 +632,18 @@
             /* permite que os itens quebrem linha */
             justify-content: center;
             /* opcional: centraliza os itens */
-            gap: 10px;
+            gap: 1%;
         }
 
 
 
         .user-sections-wrapper {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 50% 49%;
             /* Duas colunas de igual largura */
             grid-template-rows: 1fr 1fr 1fr;
             /* Três linhas de igual altura */
-            gap: 8px;
+            gap: 1%;
             /* Espaçamento entre os itens */
             justify-items: center;
             /* Centraliza os itens nas células */
@@ -688,7 +695,8 @@
 
         .user-list-panel {
             width: 100%;
-            gap: 3%;
+
+            gap: 1%;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -696,10 +704,12 @@
             border-radius: 5px;
             grid-column: 2;
             grid-row: span 3;
+
+
         }
 
         .user-list {
-            width: 100%;
+            width: 98%;
             overflow-y: auto;
             /* Permite rolar */
             scrollbar-width: none;
@@ -727,15 +737,20 @@
 
         #user-display {
             color: white;
-            font-size: clamp(60px, 2.5vw, 24px);
+            font-size: 200%;
+            width: 100%;
+            height: 100%;
+            display: flex;
             cursor: pointer;
-            text-align: left;
+            text-align: center;
             white-space: nowrap;
             overflow: hidden;
-            width: auto;
-            max-width: auto;
-
+            align-items: center;
+            /* Centraliza verticalmente */
+            justify-content: center;
+            /* Centraliza horizontalmente */
         }
+
 
 
         .user-info {
@@ -848,7 +863,7 @@
             background-clip: text;
             cursor: pointer;
             padding: 1%;
-            font-size: 2vw;
+            font-size: 100%;
             /* Reduz o tamanho da fonte para não ficar muito grande */
             white-space: nowrap;
             /* Impede a quebra do texto */
@@ -869,11 +884,13 @@
             background: rgba(9, 52, 78, 0.747);
             border-radius: 5px;
             color: white;
-            margin: 2%;
-            width: 97%;
+
+
+            width: 100%;
             /* 🔥 Faz ocupar toda a sidebar */
             padding: 8px;
             box-sizing: border-box;
+
 
         }
 
@@ -1042,11 +1059,14 @@
             display: none;
             width: 100%;
             height: 100%;
+
             overflow: auto;
             padding: 20px;
             box-sizing: border-box;
             /* Inclui padding no cálculo da largura */
         }
+
+
 
         .active {
             display: block;
@@ -1731,6 +1751,19 @@
         input:checked+.slider:before {
             transform: translateX(22px);
         }
+
+        .card-ja-tem {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: lime;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            z-index: 10;
+            pointer-events: none;
+        }
     </style>
 
     <style>
@@ -1910,27 +1943,30 @@
             }
 
             .child-footer {
-            display: grid;
-            width: 100%;
-            height: 100%;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(2,1fr);
-            gap: 3%;
-        }
-            .coluna-footer1{
+                display: grid;
+                width: 100%;
+                height: 100%;
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                gap: 3%;
+            }
+
+            .coluna-footer1 {
                 grid-column: 1;
                 grid-row: 1;
             }
-            .coluna-footer2{
+
+            .coluna-footer2 {
                 grid-column: 2;
                 grid-row: 1;
             }
-            .coluna-footer3{
+
+            .coluna-footer3 {
                 grid-column: 1 / 3;
                 grid-row: 2;
                 flex-wrap: wrap;
             }
-            
+
 
             .welcome-message h1 {
                 font-size: 4.5em;
@@ -1978,6 +2014,13 @@
 
             .card {
                 aspect-ratio: 3 / 4;
+
+            }
+
+            #user-display,
+            .username-item {
+
+                font-size: 200%;
 
             }
         }
@@ -2193,7 +2236,7 @@
                     <span id="user-display">Nome do Usuário</span>
                 </div>
                 <div class="user-list-panel">
-                    <div style="margin: 3%; width: 100%;">
+                    <div style="margin: 3%; width: 94%;">
                         <input type="text" id="search-bar" placeholder="Pesquisar usuários...">
                     </div>
                     <div class="user-list">
@@ -2366,6 +2409,7 @@
 
 
     let currentUser = null; // Variável global para armazenar o usuário logado
+    let meusCards = null;
 
     // Configuração do Firebase
     const firebaseConfig = {
@@ -2486,6 +2530,7 @@
         if (storedUser) {
             currentUser = storedUser;
 
+
             const usuarioRef = database.ref(`usuarios/${currentUser}/welcome/boasvindas`);
             usuarioRef.once("value").then((snapshot) => {
                 const boasVindas = snapshot.val();
@@ -2506,11 +2551,11 @@
             // Carregar sessões e configurações
             loadBackground();
             applyUserDisplayStyle();
+            carregarCardsDoUsuarioAtual()
 
             const TipoLeituraCards = database.ref(`usuarios/${currentUser}/background/load_every_50_cards`)
             TipoLeituraCards.once("value").then((snapshot) => {
                 const value = snapshot.val();
-                console.log("Tipo de leitura de cards:", value);
                 if (value === true) {
                     showSession("home");
                 } else {
@@ -2632,9 +2677,7 @@
         const TipoLeituraCards = database.ref(`usuarios/${currentUser}/background/load_every_50_cards`)
         TipoLeituraCards.once("value").then((snapshot) => {
             const value = snapshot.val();
-            console.log("Tipo de leitura de cards:", value);
             if (value === true) {
-                console.log("loadCurrentVisibleSessionOnly");
                 loadCurrentVisibleSessionOnly(session);
             }
         });
@@ -2701,7 +2744,6 @@
         ref.once("value").then(snapshot => {
             const data = snapshot.val();
             const total = data ? Object.keys(data).length : 0;
-            console.log(total)
             document.getElementById("contagem-cards").textContent =
                 `${total} card(s) em "${sessao}".`;
         });
@@ -3157,7 +3199,7 @@
             menu.style.display = 'block';
         });
 
-
+        verificarSeUsuarioTemCard(data, cardContainer);
         return cardContainer;
 
 
@@ -3215,7 +3257,6 @@
     // Carregar cartões de uma sessão do Firebase
 
     function loadAllSessions() {
-        console.log("Carregando todas as sessões...");
         ["filmes", "jogos", "livros", "animes", "kids", "series", "editlayout"].forEach((session) => loadCards(session));
     }
 
@@ -3251,11 +3292,9 @@
     //loadAllSessions v3
     function loadCurrentVisibleSessionOnly(session) {
         if (currentUser != document.getElementById("user-display").innerText) {
-            console.log(`${currentUser} != ${user - display}`);
             return;
         }
         document.getElementById("contagem-cards").textContent = "";
-        console.log("carregando aos poucos:", session);
         cachedJson = {};
         currentOffsetPorSecao = {
             filmes: 0,
@@ -3924,8 +3963,8 @@
             userDisplay.style.webkitBackgroundClip = "text";
             userDisplay.style.webkitTextFillColor = "transparent";
             userDisplay.style.border = `0px solid ${borderColor}`;
-            userDisplay.style.borderRadius = "8px";
-            userDisplay.style.display = "inline-block";
+            // userDisplay.style.borderRadius = "8px";
+            // userDisplay.style.display = "inline-block";
         }
 
         document.documentElement.style.setProperty('--border-color', borderColor);
@@ -3964,31 +4003,34 @@
             const users = snapshot.val();
 
             for (const user in users) {
-                const color1 = users[user]?.background?.userNameStyle?.color1 || "#ffffff";
-                const color2 = users[user]?.background?.userNameStyle?.color2 || "#ffffff";
-                const imgSrc = users[user]?.background?.userIcon?.url || "";
+                if (user != currentUser) {
+                    const color1 = users[user]?.background?.userNameStyle?.color1 || "#ffffff";
+                    const color2 = users[user]?.background?.userNameStyle?.color2 || "#ffffff";
+                    const imgSrc = users[user]?.background?.userIcon?.url || "";
 
-                const li = document.createElement("li");
-                li.textContent = `${user}`;
-                li.style.setProperty('--color1', color1);
-                li.style.setProperty('--color2', color2);
-                li.className = "username-item";
+                    const li = document.createElement("li");
+                    li.textContent = `${user}`;
+                    li.style.setProperty('--color1', color1);
+                    li.style.setProperty('--color2', color2);
+                    li.className = "username-item";
 
-                const span = document.createElement("span");
-                span.className = "user-list-item";
-                span.appendChild(li);
+                    const span = document.createElement("span");
+                    span.className = "user-list-item";
+                    span.appendChild(li);
 
-                if (imgSrc.trim() !== "") {
-                    const img = document.createElement("img");
-                    img.src = imgSrc;
-                    img.className = "user-icon-friends";
-                    span.appendChild(img);
+                    if (imgSrc.trim() !== "") {
+                        const img = document.createElement("img");
+                        img.src = imgSrc;
+                        img.className = "user-icon-friends";
+                        span.appendChild(img);
+                    }
+
+                    span.onclick = () => showOtherUserProfile(user);
+                    list.appendChild(span);
                 }
-
-                span.onclick = () => showOtherUserProfile(user);
-                list.appendChild(span);
             }
         });
+
     }
 
     function limparTodosOsCards() {
@@ -4099,7 +4141,6 @@
             const el = document.getElementById(section);
             if (el?.classList.contains("active")) return section;
         }
-        console.log("sessão não encontrada.")
         return "None";
     }
 
@@ -4108,11 +4149,11 @@
         const sections = ["filmes", "jogos", "livros", "animes", "kids", "series"];
 
         sections.forEach(sectionId => {
-            const contentDiv = document.getElementById(sectionId);
+            const contentDiv = document.querySelector(`#${sectionId} .card-row`);
             if (!contentDiv) return;
 
             contentDiv.addEventListener('scroll', () => {
-                if (contentDiv.scrollTop + contentDiv.clientHeight >= contentDiv.scrollHeight) {
+                if (contentDiv.scrollTop + contentDiv.clientHeight >= contentDiv.scrollHeight - 5) {
                     const currentSection = getCurrentVisibleSection();
                     if (sectionId === currentSection) {
                         loadMoreCards(sectionId);
@@ -4681,18 +4722,12 @@
 
     function carregarVitrineJogos() {
         console.time('carregarVitrineJogos');  // Começa o tempo de execução da função
-
         const scroll = document.getElementById("jogos-scroll");
         const scroll2 = document.getElementById("jogos-scroll2");
         let jogos = [];
         let index = 0;
-
-        console.log("Iniciando leitura do banco de dados...");
         const startDatabaseRead = Date.now();  // Marca o tempo de início da leitura do Firebase
-
         database.ref("usuarios").once("value", snapshot => {
-            console.log(`Leitura do banco de dados concluída em ${Date.now() - startDatabaseRead}ms`);
-
             snapshot.forEach(userSnap => {
                 const username = userSnap.key;
                 const userJogos = userSnap.val().jogos || {};
@@ -4701,7 +4736,6 @@
                     jogos.push({ name: jogo.name, image: jogo.image, username: username });
                 });
             });
-
             carregarItem(jogos, index, scroll);
             carregarItem(jogos, index, scroll2);
             console.timeEnd('carregarVitrineJogos');  // Fim do tempo de execução da função
@@ -4781,7 +4815,6 @@
         const maxVotes = parseInt(document.getElementById("max-votes")?.value || "999999999");
         const trofeuSelecionado = document.getElementById("filtro-trofeu")?.value.toLowerCase().trim();
         const avaliacaoSelecionada = document.getElementById("filtro-avaliacao")?.value.toLowerCase().trim();
-        console.log(`termo=${termo}, minRating=${minRating}, maxRating=${maxRating}, minVotes=${minVotes}, maxVotes=${maxVotes}, trofeu=${trofeuSelecionado}`);
 
         const abas = ['filmes', 'jogos', 'livros', 'animes', 'kids', 'series'];
         const abaAtiva = abas.find(id => {
@@ -4861,9 +4894,6 @@
         return parseInt(v) || 0;
     }
 
-
-
-
     ["background-color1", "background-color2"].forEach(id => {
         document.getElementById(id).addEventListener("input", previewBackgroundColor);
     });
@@ -4903,6 +4933,47 @@
 
     function voltarParaHome() {
         location.reload(); // mesmo efeito do F5
+    }
+
+    function carregarCardsDoUsuarioAtual() {
+        if (!currentUser) {
+            console.warn("⚠️ currentUser está indefinido!");
+            return;
+        }
+        meusCards = new Set();
+        const categorias = ["animes", "filmes", "jogos", "kids", "livros", "series"];
+        const promessas = categorias.map(categoria =>
+            firebase.database().ref(`usuarios/${currentUser}/${categoria}`).once("value")
+        );
+        Promise.all(promessas).then(snapshots => {
+            snapshots.forEach(snapshot => {
+                const cards = snapshot.val();
+                if (cards) {
+                    Object.values(cards).forEach(card => {
+                        const nome = normalizarTexto(card.name || "");
+                        meusCards.add(nome);
+                    });
+                }
+            });
+        });
+    }
+
+    function verificarSeUsuarioTemCard(cardData, cardElement) {
+        const userDisplay = document.getElementById('user-display');
+        if (!userDisplay || !currentUser || !meusCards) return;
+        const outroUsuario = userDisplay.textContent.trim();
+        const nomeCard = (cardData.name || '').toLowerCase();
+        if (currentUser != outroUsuario && meusCards.has(nomeCard)) {
+            const aviso = document.createElement('div');
+            aviso.textContent = '✅ Você já tem este card';
+            aviso.classList.add('card-ja-tem');
+            cardElement.style.position = 'relative';
+            cardElement.appendChild(aviso);
+        }
+    }
+
+    function normalizarTexto(texto) {
+        return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
     }
 
 </script>
