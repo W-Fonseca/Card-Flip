@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Card-Flip</title>
+    <link rel="icon"
+        href="https://img.icons8.com/external-glyphons-amoghdesign/32/external-card-sports-and-games-vol-01-glyphons-amoghdesign.png"
+        type="image/x-icon">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Formulário de Login -->
+    <div id="login-container" class="content-container active">
+        <div class="white-box">
+            <h2>Login</h2>
+            <input type="text" id="login-username" placeholder="Usuário">
+            <input type="password" id="login-password" placeholder="Senha">
+            <button onclick="login()">Entrar</button>
+            <p>Não tem uma conta? <a href="#" onclick="showRegister()">Registre-se</a></p>
+        </div>
+
+        <div id="jogos-container">
+            <div id="jogos-scroll"></div>
+        </div>
+    </div>
+
+
+    <!-- Formulário de Registro -->
+    <div id="register-container" class="content-container hidden">
+        <div class="white-box">
+            <h2>Registrar</h2>
+            <input type="text" id="register-username" placeholder="Usuário">
+            <input type="password" id="register-password" placeholder="Senha">
+            <button onclick="register()">Registrar</button>
+            <p>Já tem uma conta? <a href="#" onclick="showLogin()">Faça login</a></p>
+        </div>
+        <div class="alerta-registrar">
+            <h1>Alerta!</h1>
+            <p>
+                Não cadastre uma senha conhecida, não nos resposabilizamos por vazamentos de senhas!
+            </p>
+        </div>
+        <div id="jogos-container">
+            <div id="jogos-scroll2"></div>
+        </div>
+    </div>
+
+
+
+    <div id="crop-modal" class="crop-modal">
+        <div class="crop-modal-content">
+            <h3>Editar Cartão</h3>
+
+            <div class="form-group">
+                <label for="edit-name">Nome:</label>
+                <input id="edit-name" type="text" placeholder="Digite o nome do cartão" />
+            </div>
+
+            <div class="form-group">
+                <label for="edit-comment">Comentário:</label>
+                <input id="edit-comment" type="text" placeholder="Digite um comentário" />
+            </div>
+
+            <div class="form-group">
+                <label for="edit-image">Imagem (URL):</label>
+                <input id="edit-image" type="text" placeholder="Digite a URL da imagem" />
+            </div>
+
+            <div class="form-group">
+                <div
+                    style="width: 300px; height: 400px; overflow: hidden; position: relative; border: 1px solid red; background: white; margin-bottom: 10px;">
+                    <img id="editable-img" src=""
+                        style="position: absolute; cursor: grab; width: auto; height: 100%; transform-origin: center center; transform: scale(1); left: 0px; top: 0px;">
+                </div>
+                <input id="zoom-range" type="range" min="0.3" max="2" step="0.01" value="1"
+                    style="width: 100%; margin-bottom: 10px;">
+            </div>
+
+
+            <div class="modal-actions">
+                <button class="removertrofeu" style="background: #0fe;" id="apply-all">Aplicar</button>
+                <button class="removertrofeu" onclick="closeModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="welcome-message" id="welcome-message" style="display: none;">
+        <h1>Seja muito bem-vindo(a) ao Card Flip!</h1>
+        <p>
+            Estamos muito felizes em ter você aqui com a gente! 🎉<br>
+            O Card Flip é o seu espaço para registrar todas as suas aventuras 🎮📚🎥<br>
+            Descubra também o que seus amigos já curtiram e compartilhe suas próprias conquistas de entretenimento!<br>
+            Comece agora a construir sua coleção e explore novas histórias incríveis! 🚀✨
+        </p>
+        <button id="close-welcome" onclick="fecharboasvindas()">Fechar</button>
+    </div>
+
+    <div class="grid-container" id="gridContainer">
+        <div class="header">
+            <div class="child-header">
+                <nav id="navbar" class="navigation hidden">
+                    <a href="#" onclick="voltarParaHome()" class="active">Home</a>
+                    <a href="#" onclick="showSession('filmes')">Filmes</a>
+                    <a href="#" onclick="showSession('jogos')">Jogos</a>
+                    <a href="#" onclick="showSession('livros')">Livros</a>
+                    <a href="#" onclick="showSession('animes')">Animes</a>
+                    <a href="#" onclick="showSession('kids')">Kids</a>
+                    <a href="#" onclick="showSession('series')">Séries</a>
+                </nav>
+                <button class="toggle-button" onclick="toggleSidebar()">Amigos</button>
+            </div>
+        </div>
+        <div class="content">
+            <img id="background-image" src="">
+            <button id="confirmBackgroundEdit" onclick="closeBackgroundEditor()" style="
+    display: none;
+    z-index: 9999;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+">
+                🆗 Confirmar Edição de Fundo
+            </button>
+
+            <div class="pesquisa">
+                <button id="expandir_pesquisa" onclick="trocarLayout()">>></button>
+            </div>
+            <div id="filmes" class="content-container hidden">
+                <div class="card-row" id="card-row-filmes">
+                    <!-- Cartas de filmes vão aqui -->
+                </div>
+            </div>
+            <div id="jogos" class="content-container hidden">
+                <div class="card-row" id="card-row-jogos">
+                    <!-- Cartas de jogos vão aqui -->
+                </div>
+            </div>
+            <div id="livros" class="content-container hidden">
+                <div class="card-row" id="card-row-livros">
+                    <!-- Cartas de livros vão aqui -->
+                </div>
+            </div>
+            <div id="animes" class="content-container hidden">
+                <div class="card-row" id="card-row-animes">
+                    <!-- Cartas de animes/cartoons vão aqui -->
+                </div>
+            </div>
+            <div id="kids" class="content-container hidden">
+                <div class="card-row" id="card-row-kids">
+                    <!-- Cartas de kids vão aqui -->
+                </div>
+            </div>
+            <div id="series" class="content-container hidden">
+                <div class="card-row" id="card-row-series">
+                    <!-- Cartas de séries vão aqui -->
+                </div>
+            </div>
+
+            <div id="menu" class="menu">
+                <button class="BotaoDireitoMouse" id="add-card-btn" onclick="openCardInputModal()">Adicionar
+                    Card</button>
+                <Button onclick="exibirCard()">Exibir Card</Button>
+                <button class="BotaoDireitoMouse" onclick="editCard()">Editar Card</button>
+                <button class="BotaoDireitoMouse" onclick="deleteCard()">Excluir</button>
+                <button class="BotaoDireitoMouse" id="opcao1">Mover para Outra Sessão</button>
+                <button class="BotaoDireitoMouse" id="opcao2">Atribuir Troféu</button>
+                <button class="BotaoDireitoMouse" id="opcao3">Atribuir Avaliação</button>
+                <button class="copiarCard hidden" onclick="copyCardToMyProfile()">Copiar Card</button>
+            </div>
+            <div id="submenu" class="submenu">
+                <button onclick="moveCardTo('filmes')">Filmes</button>
+                <button onclick="moveCardTo('jogos')">Jogos</button>
+                <button onclick="moveCardTo('livros')">Livros</button>
+                <button onclick="moveCardTo('animes')">Animes/Cartoons</button>
+                <button onclick="moveCardTo('kids')">Kids</button>
+                <button onclick="moveCardTo('series')">Séries</button>
+            </div>
+            <div id="submenu2" class="submenu BotaoDireitoMouse">
+                <button onclick="atribuirTrofeu('platina')" style="position: relative;">🏆 100%</button>
+                <button onclick="atribuirTrofeu('zerado')" style="position: relative;">🥈 Zerado</button>
+                <button onclick="atribuirTrofeu('jogado')" style="position: relative;">🥉 Jogado</button>
+                <button class="removertrofeu" onclick="removerTrofeu()">Remover Troféu</button>
+            </div>
+            <div id="submenu3" class="submenu BotaoDireitoMouse">
+                <button onclick="atribuirAvaliacao('amei')">😍 Amei</button>
+                <button onclick="atribuirAvaliacao('gostei')">👍 Gostei</button>
+                <button onclick="atribuirAvaliacao('meh')">😐 Mais ou menos</button>
+                <button onclick="atribuirAvaliacao('merda')">💩 Uma merda</button>
+                <button class="removertrofeu" onclick="removerAvaliacao()">Remover Avaliação</button>
+            </div>
+
+        </div>
+        <div class="sidebar">
+            <!-- Seção do usuário -->
+            <div id="wrapper1" class="user-sections-wrapper">
+                <div class="user-section1" onclick="toggleDropdown(event)">
+                    <img id="user-icon" alt="Usuário" class="user-icon">
+                    <div id="dropdownMenu" class="dropdown-content" style="display: none">
+                        <button onclick="event.stopPropagation(); showSession('editlayout')">📝 Editar
+                            Layout</button>
+                        <button onclick="event.stopPropagation(); confirmDeleteAccount()">🗑️Excluir
+                            Conta</button>
+                        <button onclick="event.stopPropagation(); logout()">🚶Logout</button>
+                    </div>
+                </div>
+                <div class="user-section2">
+                    <span id="user-display">Nome do Usuário</span>
+                </div>
+                <div class="user-list-panel">
+                    <div style="margin: 3%; width: 94%;">
+                        <input type="text" id="search-bar" placeholder="Pesquisar usuários...">
+                    </div>
+                    <div class="user-list">
+                        <ul id="user-list"></ul>
+                    </div>
+                </div>
+            </div>
+            <div id="wrapper2" class="user-sections-wrapper2 hidden">
+                <div class="user-list-panel" style="gap: 1%;">
+                    <input type="text" id="card-search" class="bar-card-search" placeholder="Buscar cards...">
+                    <div style="display: flex; gap: 1%;">
+                        <input id="min-rating" class="bar-card-search" placeholder="Nota mínima: 0~10">
+                        <input id="max-rating" class="bar-card-search" placeholder="Nota máxima: 0~10">
+                    </div>
+                    <div style="display: flex; gap: 1%;">
+                        <input id="min-votes" class="bar-card-search" placeholder="Votos mínimos: Ex: 1000">
+                        <input id="max-votes" class="bar-card-search" placeholder="Votos máximos: Ex: 100000">
+                    </div>
+                    <select id="filtro-trofeu" class="bar-card-search">
+                        <option value="" class="bar-card-search">Todos os troféus</option>
+                        <option value="platina" class="bar-card-search">100% 🏆</option>
+                        <option value="zerado" class="bar-card-search">Zerado 🥈</option>
+                        <option value="jogado" class="bar-card-search">Jogado 🥉</option>
+                        <option value="sem-trofeu" class="bar-card-search">Sem troféu</option>
+                    </select>
+                    <select id="filtro-avaliacao" class="bar-card-search">
+                        <option value="" class="bar-card-search">Todas as avaliações</option>
+                        <option value="amei" class="bar-card-search">😍 Amei</option>
+                        <option value="gostei" class="bar-card-search">👍 Gostei</option>
+                        <option value="meh" class="bar-card-search">😐 Meh</option>
+                        <option value="merda" class="bar-card-search">💩 Merda</option>
+                        <option value="sem-avaliacao" class="bar-card-search">Sem avaliação</option>
+                    </select>
+                    <button class="bar-card-search-button" onclick="filtrarCards()">Buscar</button>
+                    <label id="filtro-contagem" style="color: rgba(255, 255, 255, 0.288); margin: 10%;"></label>
+                </div>
+
+            </div>
+
+
+            <!-- Caixa de mensagens -->
+            <div id="chat-box">
+                <div id="chat-messages"></div>
+                <input type="text" id="chat-input" placeholder="Digite sua mensagem..."
+                    onkeydown="if(event.key==='Enter') sendMessage()">
+
+            </div>
+        </div>
+
+
+        <div class="footer">
+            <div class="child-footer">
+                <div class="linha-footer coluna-footer1">
+                    <div class="trofeus-container">
+                        <label id="trofeus-ouro" class="cont-trofeu hidden" style="color: gold;">0</label>
+                        <label class="cont-trofeu hidden" title="100%">🏆</label>
+                        <!-- <img id="trofeus-ouro-img" class="cont-trofeu hidden" alt="Troféu Ouro"> -->
+
+                        <label id="trofeus-prata" class="cont-trofeu hidden" style="color: silver;">0</label>
+                        <label class="cont-trofeu hidden" title="Zerado">🥈</label>
+                        <!-- <img id="trofeus-prata-img" class="cont-trofeu hidden" alt="Troféu Prata"> -->
+
+                        <label id="trofeus-bronze" class="cont-trofeu hidden" style="color: burlywood;">0</label>
+                        <label class="cont-trofeu hidden" title="Jogado">🥉</label>
+                        <!-- <img id="trofeus-bronze-img" class="cont-trofeu hidden" alt="Troféu Bronze"> -->
+                    </div>
+                </div>
+                <div class="linha-footer coluna-footer2">
+                    <div class="avaliacoes-container">
+                        <label id="avaliacoes-amei" class="cont-avaliacao hidden" style="color: hotpink;">0</label>
+                        <label class="cont-avaliacao hidden" title="Amei">😍</label>
+
+                        <label id="avaliacoes-gostei" class="cont-avaliacao hidden" style="color: lightgreen;">0</label>
+                        <label class="cont-avaliacao hidden" title="Gostei">👍</label>
+
+                        <label id="avaliacoes-meh" class="cont-avaliacao hidden" style="color: gray;">0</label>
+                        <label class="cont-avaliacao hidden" title="Meh">😐</label>
+
+                        <label id="avaliacoes-merda" class="cont-avaliacao hidden" style="color: brown;">0</label>
+                        <label class="cont-avaliacao hidden" title="Ruim">💩</label>
+                    </div>
+                </div>
+                <div class="linha-footer coluna-footer3">
+                    <label id="contagem-cards" style="color: rgba(255, 255, 255, 0.288);"></label>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="editlayout" class="content-container hidden" style="display: flex; justify-content: center;">
+        <h2>Editar Layout</h2>
+        <label for="background-url">URL da Imagem de Fundo:</label>
+        <input type="text" id="background-url" placeholder="Digite a URL da imagem">
+        <button onclick="openBackgroundEditor()">Editar Fundo Diretamente</button>
+
+        <label>Zoom da Imagem de Fundo:</label>
+        <input id="editlayout-zoom" type="range" min="0.3" max="2" step="0.001" value="1">
+
+        <label for="icon-url">URL do Icone:</label>
+        <input type="text" id="icon-Url" placeholder="Digite a URL da imagem">
+        <div class="editicon-image">
+            <div id="editicon" style="overflow: hidden;">
+                <!-- Imagem de fundo será aplicada via CSS -->
+                <img id="editicon-child" src="">
+            </div>
+
+        </div>
+        <!--<label>Tamanho do Ícone:</label>-->
+        <input id="icon-zoom" class="hidden" type="range" min="0.3" max="2" step="0.01" value="1">
+
+        <h3>Alterar Cor de Fundo</h3>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <label for="background-color1">Cor 1:</label>
+            <input type="color" id="background-color1" value="#ffffff">
+            <label for="background-color2">Cor 2:</label>
+            <input type="color" id="background-color2" value="#ffffff">
+
+        </div>
+        <h3>Estilo do Nome do Usuário</h3>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <label for="user-gradient-color1">Cor 1:</label>
+            <input type="color" id="user-gradient-color1" value="#ffffff">
+            <label for="user-gradient-color2">Cor 2:</label>
+            <input type="color" id="user-gradient-color2" value="#ffffff">
+            <label for="user-border-color">Cor da Borda:</label>
+            <input type="color" id="user-border-color" value="#000000">
+        </div>
+
+        <div class="desempenho-site" style="border: 0.1vw solid #ccc; gap: 2%; margin: 2%;">
+            <div class="switch-container">
+                <label class="switch">
+                    <input type="checkbox" id="toggleLoadMode">
+                    <span class="slider"></span>
+                </label>
+                <span id="loadModeLabel">Carregar Cards aos poucos</span>
+            </div>
+            <p style="color: red; margin-bottom: 3%;">Pode melhorar no desenpenho do site</p>
+        </div>
+        <button id="savebackground" onclick="saveBackground()">Salvar BackGround</button>
+        <button onclick="close_editlayout()">Fechar Janela</button>
+    </div>
+
+    <div id="card-input-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Adicionar Novo Cartão</h2>
+            <input type="text" id="input-card-name" placeholder="Nome da Carta">
+            <input type="text" id="input-card-comment" placeholder="Comentário">
+            <input type="text" id="input-card-image" placeholder="URL da Imagem">
+            <div class="modal-buttons">
+                <button onclick="submitCardInput()">Adicionar</button>
+                <button onclick="closeCardInputModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cardOverlay" class="card-overlay" style="display: none;">
+
+    </div>
+
+
+</body>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+<script src="script.js"></script>
+</html>
