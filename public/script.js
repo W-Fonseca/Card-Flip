@@ -308,7 +308,8 @@
             amei: 0,
             gostei: 0,
             meh: 0,
-            merda: 0
+            merda: 0,
+            desejo: 0
         };
 
         ref.once("value").then(snapshot => {
@@ -326,6 +327,7 @@
             document.getElementById("avaliacoes-gostei").textContent = contagem.gostei;
             document.getElementById("avaliacoes-meh").textContent = contagem.meh;
             document.getElementById("avaliacoes-merda").textContent = contagem.merda;
+            document.getElementById("avaliacoes-desejo").textContent = contagem.desejo;
         });
     }
 
@@ -453,7 +455,9 @@
                     badge.textContent = nota === "amei" ? "😍" :
                         nota === "gostei" ? "👍" :
                             nota === "meh" ? "😐" :
-                                nota === "merda" ? "💩" : "";
+                                nota === "merda" ? "💩" : 
+                                    nota === "desejo" ? "🎯" : "";
+                                
 
                     // Remove badge anterior, se existir
                     selectedCard.querySelector(".avaliacao-badge")?.remove();
@@ -743,6 +747,10 @@
                 case "merda":
                     emoji = "💩";
                     title = "Ruim";
+                    break;
+                case "desejo":
+                    emoji = "🎯";
+                    title = "Desejo";
                     break;
                 default:
                     emoji = "";
@@ -2408,6 +2416,8 @@
         const maxVotes = parseInt(document.getElementById("max-votes")?.value || "999999999");
         const trofeuSelecionado = document.getElementById("filtro-trofeu")?.value.toLowerCase().trim();
         const avaliacaoSelecionada = document.getElementById("filtro-avaliacao")?.value.toLowerCase().trim();
+        const minYear = parseInt(document.getElementById("min-year")?.value || "0");
+        const maxYear = parseInt(document.getElementById("max-year")?.value || "9999");
 
         const abas = ['filmes', 'jogos', 'livros', 'animes', 'kids', 'series'];
         const abaAtiva = abas.find(id => {
@@ -2428,6 +2438,8 @@
             !minVotes &&
             maxRating === 10 &&
             maxVotes === 999999999 &&
+            minYear === 0 &&
+            maxYear === 9999 &&
             trofeuSelecionado === ""
         ) {
             buscando = false;
@@ -2451,6 +2463,9 @@
                 const rating = parseFloat((cardData.rating || "0").replace(",", "."));
                 const votes = parseVotes(cardData.votes || "");
                 const trofeu = (cardData.trofeu || "").toLowerCase().trim();
+                const year = parseInt(cardData.year || "0");
+                const matchYear = !isNaN(year) && year >= minYear && year <= maxYear;
+
                 const avaliacao = (cardData.avaliacao || "").toLowerCase().trim();
                 const matchAvaliacao =
                     avaliacaoSelecionada === "" ||
@@ -2467,7 +2482,7 @@
                     trofeu === trofeuSelecionado;
 
 
-                if (matchTexto && matchRating && matchVotes && matchTrofeu && matchAvaliacao) {
+                if (matchTexto && matchRating && matchVotes && matchTrofeu && matchAvaliacao && matchYear) {
                     const card = createCard(cardData, key);
                     cardRow.appendChild(card);
                     resultados++;

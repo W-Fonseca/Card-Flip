@@ -199,6 +199,7 @@
                 <button onclick="atribuirAvaliacao('gostei')">👍 Gostei</button>
                 <button onclick="atribuirAvaliacao('meh')">😐 Mais ou menos</button>
                 <button onclick="atribuirAvaliacao('merda')">💩 Uma merda</button>
+                <button onclick="atribuirAvaliacao('desejo')">🎯 Lista de desejo</button>
                 <button class="removertrofeu" onclick="removerAvaliacao()">Remover Avaliação</button>
             </div>
 
@@ -239,6 +240,10 @@
                         <input id="min-votes" class="bar-card-search" placeholder="Votos mínimos: Ex: 1000">
                         <input id="max-votes" class="bar-card-search" placeholder="Votos máximos: Ex: 100000">
                     </div>
+                    <div style="display: flex; gap: 1%;">
+                    <input id="min-year" class="bar-card-search" placeholder="Ano mínimo: Ex: 1987">
+                    <input id="max-year" class="bar-card-search" placeholder="Ano máximo: Ex: 2025">
+                    </div>
                     <select id="filtro-trofeu" class="bar-card-search">
                         <option value="" class="bar-card-search">Todos os troféus</option>
                         <option value="platina" class="bar-card-search">100% 🏆</option>
@@ -252,6 +257,7 @@
                         <option value="gostei" class="bar-card-search">👍 Gostei</option>
                         <option value="meh" class="bar-card-search">😐 Meh</option>
                         <option value="merda" class="bar-card-search">💩 Merda</option>
+                        <option value="desejo" class="bar-card-search">🎯 Lista de desejo</option>
                         <option value="sem-avaliacao" class="bar-card-search">Sem avaliação</option>
                     </select>
                     <button class="bar-card-search-button" onclick="filtrarCards()">Buscar</button>
@@ -301,6 +307,9 @@
 
                         <label id="avaliacoes-merda" class="cont-avaliacao hidden" style="color: brown;">0</label>
                         <label class="cont-avaliacao hidden" title="Ruim">💩</label>
+
+                        <label id="avaliacoes-desejo" class="cont-avaliacao hidden" style="color: orange;">0</label>
+                        <label class="cont-avaliacao hidden" title="Lista de desejo">🎯</label>
                     </div>
                 </div>
                 <div class="linha-footer coluna-footer3">
